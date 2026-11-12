@@ -1690,7 +1690,7 @@
     }
 
     /* ==========================================================================
-       SUBIDA DE ARCHIVO DESDE DISPOSITIVO (archivo_documento, file, image, video_selfie)
+       SUBIDA DE ARCHIVO DESDE DISPOSITIVO (archivo_documento, file, image, video_selfie) + TARJETA PDF ENRIQUECIDA
        ========================================================================== */
     function DeviceFileUploadField({ field, value, onFileSelected, onClearFile, error }) {
       const inputRef = useRef(null);
@@ -1758,16 +1758,53 @@
           <div style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
             <ExampleImageRender url={field.exampleImage} hidden={hasFile} />
 
+            {/* Vista Previa de Imagen */}
             {hasFile && value.preview && !value.isVideo && (
               <img src={value.preview} className="preview-image fade-in" alt="Vista previa" />
             )}
+            
+            {/* Vista Previa de Video */}
             {hasFile && value.preview && value.isVideo && (
               <video src={value.preview} controls style={{width: '100%', maxWidth: '260px', borderRadius: '12px', marginBottom: '12px'}}></video>
             )}
+
+            {/* Vista Previa Enriquecida estilo iOS para PDF y otros Archivos */}
             {hasFile && !value.preview && (
-              <div style={{display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: 'var(--verde-jara-light)', color: '#1b4d29', borderRadius: '12px', fontWeight: 600, fontSize: '0.88rem', marginBottom: '14px', maxWidth: '100%'}}>
-                <i className="fas fa-file-pdf"></i>
-                <span style={{overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>{value.name || 'Documento adjunto'}</span>
+              <div className="fade-in" style={{
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '14px', 
+                padding: '16px 18px', 
+                background: '#ffffff', 
+                border: '1.5px solid #e2e8f0',
+                borderRadius: '16px', 
+                width: '100%',
+                maxWidth: '300px',
+                marginBottom: '16px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
+              }}>
+                <div style={{
+                  width: '46px', 
+                  height: '46px', 
+                  borderRadius: '12px', 
+                  background: 'var(--verde-jara-light)', 
+                  color: 'var(--verde-jara-dark)', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  fontSize: '1.4rem',
+                  flexShrink: 0
+                }}>
+                  <i className={value.mime === 'application/pdf' ? "fas fa-file-pdf" : "fas fa-file-alt"}></i>
+                </div>
+                <div style={{overflow: 'hidden', flex: 1, textAlign: 'left'}}>
+                  <p style={{fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-main)', margin: '0 0 4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>
+                    {value.name || 'Documento adjunto'}
+                  </p>
+                  <p style={{fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0, fontWeight: 500}}>
+                    {value.mime === 'application/pdf' ? 'Documento PDF' : 'Archivo adjunto'} • Listo para enviar
+                  </p>
+                </div>
               </div>
             )}
 
