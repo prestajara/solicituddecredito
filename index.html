@@ -1,46 +1,3354 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-MX">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>PrestaJara AppAbonos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Portal PrestaJara</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
   <style>
-    /* Eliminamos márgenes para que el iframe ocupe el 100% real de la pantalla del celular sin bordes blancos */
-    html, body {
+    /* ==========================================================================
+       SISTEMA DE DISEÑO APPLE / PRESTAJARA (MÓVIL & DESKTOP EJECUTIVO)
+       ========================================================================== */
+    :root {
+      --verde-jara: #439859;
+      --verde-jara-dark: #347a46;
+      --verde-jara-light: #e8f5ec;
+      --azul-instruccion: #0a3d62;
+      --bg-banner-ice: #eef6ff;
+      --bg-page: #f5f5f7;
+      --surface-white: #ffffff;
+      --input-bg: #f2f2f7;
+      --text-main: #1d1d1f;
+      --text-muted: #6e6e73;
+      --border-soft: #d2d2d7;
+      --danger: #ff3b30;
+      --warning: #ff9500;
+      --success: #34c759;
+    }
+
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-color: #F2F2F7; /* Fondo a juego con tu app */
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
-    iframe {
+
+    html, body {
+      background: var(--surface-white);
+      color: var(--text-main);
+      min-height: 100vh;
+      width: 100%;
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+      touch-action: manipulation;
+    }
+
+    input, select, textarea {
+      font-size: 16px !important;
+      font-family: inherit;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 580px;
+      margin: 0 auto;
+      background: var(--surface-white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .hidden { display: none !important; }
+    .fade-in { animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1); width: 100%; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- ENCABEZADO CURVO PRESTAJARA + BANNER AZUL HIELO --- */
+    .top-brand-bar {
+      background: var(--verde-jara);
+      color: #ffffff;
+      text-align: center;
+      padding: 20px 20px 28px;
+      border-bottom-left-radius: 50% 26px;
+      border-bottom-right-radius: 50% 26px;
+      position: relative;
+      z-index: 3;
+    }
+
+    .top-brand-inner {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .top-brand-inner img {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      object-fit: cover;
+    }
+
+    .top-brand-title {
+      font-size: 1.45rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .step-progress-track {
+      width: 100%;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.25);
+      margin-top: 12px;
+      border-radius: 4px;
+      overflow: hidden;
+      max-width: 240px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .step-progress-fill {
+      height: 100%;
+      background: #ffffff;
+      transition: width 0.4s ease;
+      border-radius: 4px;
+    }
+
+    .instruction-banner {
+      background: var(--bg-banner-ice);
+      margin-top: -22px;
+      padding: 38px 22px 20px;
+      position: relative;
+      z-index: 2;
+      border-bottom: 1px solid #e2eefc;
+    }
+
+    .instruction-banner h2 {
+      color: var(--azul-instruccion);
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      margin-bottom: 4px;
+      line-height: 1.2;
+    }
+
+    .instruction-banner p {
+      color: #2b5876;
+      font-size: 0.92rem;
+      font-weight: 400;
+      line-height: 1.4;
+    }
+
+    .app-container {
+      flex: 1;
+      width: 100%;
+    }
+
+    .view-body {
+      padding: 22px 18px 100px;
+      width: 100%;
+    }
+
+    /* --- MENÚ DE BIENVENIDA Y TARJETAS --- */
+    .cards-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      width: 100%;
+      max-width: 360px;
+      margin: 10px auto 0;
+    }
+
+    .btn-card {
+      background: var(--surface-white);
+      border-radius: 22px;
+      padding: 30px 22px;
+      text-align: center;
+      cursor: pointer;
+      border: 1.5px solid #e5e5ea;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+    }
+
+    .icono-contenedor {
+      width: 72px;
+      height: 72px;
+      background: var(--verde-jara-light);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      transition: all 0.25s ease;
+    }
+
+    .card-logo { font-size: 2.2rem; color: var(--verde-jara); transition: color 0.25s ease; }
+    .card-title { font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px; transition: color 0.25s ease; }
+    .card-subtitle { font-size: 0.86rem; color: var(--text-muted); font-weight: 500; transition: color 0.25s ease; }
+
+    .btn-card:hover, .btn-card:active {
+      background-color: var(--verde-jara);
+      border-color: var(--verde-jara);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(67, 152, 89, 0.28);
+    }
+    .btn-card:hover .icono-contenedor, .btn-card:active .icono-contenedor { background: rgba(255, 255, 255, 0.2); }
+    .btn-card:hover .card-logo, .btn-card:hover .card-title, .btn-card:hover .card-subtitle,
+    .btn-card:active .card-logo, .btn-card:active .card-title, .btn-card:active .card-subtitle { color: #ffffff; }
+
+    /* --- FORMULARIOS ESTILO APPLE iOS --- */
+    .form-group { margin-bottom: 18px; width: 100%; }
+    .form-group label {
+      display: flex;
+      align-items: center;
+      margin-bottom: 7px;
+      font-weight: 600;
+      font-size: 0.92rem;
+      color: #3a3a3c;
+      letter-spacing: -0.1px;
+    }
+
+    .form-control, .form-group input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid transparent;
+      border-radius: 14px;
+      font-size: 1rem !important;
+      background: var(--input-bg);
+      color: var(--text-main);
+      transition: all 0.2s ease;
+      appearance: none;
+      -webkit-appearance: none;
+      outline: none;
+    }
+
+    .form-group select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236e6e73' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 42px;
+    }
+
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      background: var(--surface-white);
+      border-color: var(--verde-jara);
+      box-shadow: 0 0 0 4px rgba(67, 152, 89, 0.14);
+    }
+
+    .form-group input[readonly], .form-group input:disabled, .form-group select:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      background: #ebebf0;
+    }
+
+    .input-error {
+      border-color: var(--danger) !important;
+      background-color: #fff2f2 !important;
+    }
+
+    .input-success {
+      border-color: var(--verde-jara) !important;
+      background-color: #f2fbf5 !important;
+    }
+
+    .field-error {
+      font-size: 0.83rem;
+      color: var(--danger);
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 600;
+    }
+
+    .row-2 { display: grid; grid-template-columns: 1fr; gap: 0 14px; width: 100%; }
+    @media (min-width: 540px) { .row-2 { grid-template-columns: 1fr 1fr; } }
+
+    .cp-row { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 18px; width: 100%; }
+    .cp-row .form-group { margin-bottom: 0; flex: 1; }
+    .cp-row .btn-container { flex-shrink: 0; }
+
+    /* --- BOTONES APPLE --- */
+    .btn {
+      padding: 14px 22px;
+      border: none;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 52px;
+      touch-action: manipulation;
+    }
+    .btn:active { transform: scale(0.985); }
+    .btn:disabled { background: #c7c7cc !important; color: #ffffff !important; box-shadow: none !important; cursor: not-allowed; transform: none; }
+
+    .btn-primary, .btn-success {
+      background: var(--verde-jara);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(67, 152, 89, 0.25);
+      width: 100%;
+    }
+    .btn-primary:hover, .btn-success:hover { background: var(--verde-jara-dark); }
+
+    .btn-secondary {
+      background: var(--verde-jara-light);
+      color: var(--verde-jara-dark);
+      border: 1.5px solid rgba(67, 152, 89, 0.28);
+    }
+    .btn-secondary:hover { background: #daf0e1; }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 600;
+      padding: 10px 14px;
+      min-height: auto;
+    }
+    .btn-ghost:hover { color: var(--verde-jara); }
+
+    /* --- RADIO, CHECKBOX, CHIPS, TOGGLE & SLIDER --- */
+    .radio-group, .checkbox-group { display: flex; flex-direction: column; gap: 9px; }
+    .radio-item, .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 16px;
+      border: 1.5px solid transparent;
+      border-radius: 14px;
+      background: var(--input-bg);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .radio-item.selected, .checkbox-item.checked {
+      background: var(--verde-jara-light);
+      border-color: var(--verde-jara);
+      color: #1b4d29;
+      font-weight: 600;
+    }
+    .radio-item input, .checkbox-item input { accent-color: var(--verde-jara); width: 18px; height: 18px; cursor: pointer; }
+    .radio-item label, .checkbox-item label { cursor: pointer; margin: 0; flex: 1; font-weight: 500; }
+
+    .chips-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      padding: 10px 16px;
+      border: 1.5px solid transparent;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.92rem;
+      font-weight: 500;
+      background: var(--input-bg);
+      color: var(--text-main);
+    }
+    .chip.selected {
+      background: var(--verde-jara-light);
+      border-color: var(--verde-jara);
+      color: #1b4d29;
+      font-weight: 600;
+    }
+
+    .toggle-switch { position: relative; display: inline-block; width: 52px; height: 30px; flex-shrink: 0; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; cursor: pointer; inset: 0; background-color: #d1d1d6; transition: .3s; border-radius: 34px; }
+    .toggle-slider:before { position: absolute; content: ""; height: 24px; width: 24px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+    .toggle-switch input:checked + .toggle-slider { background-color: var(--verde-jara); }
+    .toggle-switch input:checked + .toggle-slider:before { transform: translateX(22px); }
+
+    .range-slider { width: 100%; accent-color: var(--verde-jara); height: 8px; border-radius: 4px; }
+    .range-value { text-align: center; font-weight: 700; font-size: 1.35rem; color: var(--verde-jara); margin-top: 10px; }
+
+    /* --- TOOLTIP --- */
+    .tooltip-container { position: relative; display: inline-flex; align-items: center; margin-left: 6px; cursor: pointer; }
+    .tooltip-icon { color: #8e8e93; font-size: 0.95rem; }
+    .tooltip-text {
+      visibility: hidden; width: max-content; max-width: 240px; background-color: #1d1d1f; color: #fff;
+      text-align: center; border-radius: 10px; padding: 8px 12px; position: absolute; z-index: 1000;
+      bottom: 135%; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity 0.25s;
+      font-size: 0.78rem; font-weight: 400; line-height: 1.35; box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+    }
+    .tooltip-container:hover .tooltip-text, .tooltip-container:active .tooltip-text { visibility: visible; opacity: 1; }
+
+    /* --- TARJETAS DE CÁMARA INTELIGENTE Y ARCHIVOS --- */
+    .step-fields-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .photo-slot {
+      background: #fafafa;
+      border: 1.5px solid #e5e5ea;
+      border-radius: 20px;
+      padding: 20px 16px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      transition: all 0.25s ease;
+    }
+    .photo-slot.has-image {
+      border-color: var(--verde-jara);
+      background: #f7fcf9;
+    }
+    .photo-slot.slot-error {
+      border-color: var(--danger);
+      background: #fff5f5;
+    }
+
+    .slot-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+      font-size: 1.02rem;
+    }
+    .slot-sub {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      line-height: 1.35;
+    }
+
+    .example-image {
+      width: 100%;
+      max-width: 250px;
+      max-height: 190px;
+      object-fit: contain;
+      margin: 6px auto 14px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid #e5e5ea;
+      padding: 4px;
+      display: block;
+    }
+
+    .preview-image {
+      width: 100%;
+      max-width: 250px;
+      max-height: 200px;
+      object-fit: contain;
+      margin: 6px auto 14px;
+      border-radius: 14px;
+      border: 2px solid var(--verde-jara);
+      background: #fff;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+      display: block;
+    }
+
+    .upload-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+    .upload-badge.uploading { background: #fff8e6; color: #b7791f; border: 1px solid #fbd38d; }
+    .upload-badge.uploaded { background: var(--verde-jara-light); color: #22543d; border: 1px solid #9ae6b4; }
+    .upload-badge.error { background: #fff2f2; color: var(--danger); border: 1px solid #feb2b2; }
+
+    .selfie-angles-row {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .angle-chip {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 10px;
+      background: #e5e5ea;
+      color: #6e6e73;
+    }
+    .angle-chip.done {
+      background: var(--verde-jara);
+      color: #fff;
+    }
+
+    /* --- FIRMA EN CANVAS --- */
+    .signature-pad {
+      width: 100%;
+      height: 190px;
+      border: 1.5px solid #d2d2d7;
+      border-radius: 16px;
+      background-color: #ffffff;
+      touch-action: none;
+      cursor: crosshair;
+      display: block;
+    }
+
+    /* --- OTP & CAPTCHA --- */
+    .otp-stage {
+      background: #fafafa;
+      border: 1.5px solid #e5e5ea;
+      padding: 22px 18px;
+      border-radius: 18px;
+      text-align: center;
+    }
+    .captcha-container { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 12px 0; }
+    .captcha-canvas { background: var(--input-bg); border: 1.5px solid var(--border-soft); border-radius: 12px; }
+    .btn-reload-captcha {
+      background: var(--input-bg); width: 46px; height: 46px; border-radius: 12px; border: none;
+      font-size: 1.2rem; color: var(--text-main); cursor: pointer; transition: transform 0.3s;
+    }
+    .btn-reload-captcha:hover { color: var(--verde-jara); transform: rotate(180deg); }
+
+    /* --- NAVEGACIÓN INFERIOR DEL FORMULARIO --- */
+    .privacy-text {
+      background: var(--input-bg);
+      padding: 14px 16px;
+      border-radius: 14px;
+      font-size: 0.84rem;
+      color: #3a3a3c;
+      margin-top: 22px;
+      line-height: 1.45;
+      text-align: center;
+    }
+    .privacy-link { color: var(--verde-jara); font-weight: 700; cursor: pointer; text-decoration: underline; }
+
+    .form-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid #e5e5ea;
+    }
+
+    /* --- SKELETON --- */
+    .skeleton {
+      background: linear-gradient(90deg, #e5e5ea 25%, #f2f2f7 50%, #e5e5ea 75%);
+      background-size: 200% 100%;
+      animation: sk 1.4s ease-in-out infinite;
+      border-radius: 14px;
+    }
+    @keyframes sk { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* ==========================================================================
+       MODAL INMERSIVO DE CÁMARA (FACE ID 60 TICKS + DOCUMENTOS + POST-CAPTURE REVIEW)
+       ========================================================================== */
+    .scanner-overlay-modal {
       position: fixed;
-      top: 0;
-      left: 0;
+      inset: 0;
+      width: 100vw;
+      height: 100dvh;
+      background: #ffffff;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .scanner-modal-inner {
+      width: 100%;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: #ffffff;
+    }
+
+    .scanner-stage-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 18px 24px;
+      position: relative;
+    }
+
+    /* --- VISOR CIRCULAR FACE ID --- */
+    .face-scanner-box {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    @media (max-width: 360px) {
+      .face-scanner-box { width: 268px; height: 268px; }
+    }
+
+    .face-ticks-svg {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
-      border: none;
+      pointer-events: none;
+      z-index: 4;
+    }
+    .tick-line {
+      stroke: #d1d5db;
+      stroke-width: 3.2;
+      stroke-linecap: round;
+      transition: stroke 0.25s ease, stroke-width 0.25s ease;
+    }
+    .tick-line.active-target { stroke: #e17055; stroke-width: 3.8; }
+    .tick-line.completed { stroke: #15803d !important; stroke-width: 3.8; }
+
+    .face-circle-viewport {
+      width: 78%;
+      height: 78%;
+      border-radius: 50%;
+      overflow: hidden;
+      position: relative;
+      border: 3.5px solid #1e3a8a;
+      background: #0f172a;
+      z-index: 2;
+      transition: border-color 0.3s ease;
+    }
+    .face-circle-viewport.ready-green { border-color: #15803d; }
+    .face-circle-viewport video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1);
+    }
+
+    /* --- VISOR DOCUMENTOS (HORIZONTAL INE 85:54 / VERTICAL ESTADO CUENTA 3:4) --- */
+    .doc-scanner-box {
+      width: 100%;
+      max-width: 400px;
+      position: relative;
+      margin: 0 auto;
+    }
+    .doc-viewport-frame {
+      width: 100%;
+      aspect-ratio: 85 / 54;
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
+      border: 3.5px solid #15803d;
+      background: #0f172a;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+      transition: aspect-ratio 0.25s ease;
+    }
+    .doc-viewport-frame.vertical-doc {
+      aspect-ratio: 3 / 4;
+      max-width: 310px;
+      margin: 0 auto;
+    }
+    .doc-viewport-frame video, .doc-viewport-frame img.review-capture-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* --- PÍLDORA FLOTANTE DE INSTRUCCIÓN --- */
+    .floating-pill-prompt {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: var(--azul-instruccion);
+      padding: 12px 18px;
+      border-radius: 14px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 86%;
+      max-width: 245px;
+      z-index: 6;
+      pointer-events: none;
+      text-align: center;
+    }
+    .floating-pill-prompt i { font-size: 1.2rem; color: var(--azul-instruccion); }
+    .floating-pill-prompt span { font-size: 0.92rem; font-weight: 600; line-height: 1.3; }
+
+    /* --- CHECKMARK DE ÉXITO --- */
+    .face-success-cover {
+      position: absolute;
+      inset: 0;
+      background: rgba(220, 252, 231, 0.94);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 8;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .face-success-cover.show { opacity: 1; }
+    .checkmark-svg {
+      width: 82px; height: 82px; stroke: #15803d; stroke-width: 5;
+      stroke-linecap: round; stroke-linejoin: round; fill: none;
+    }
+
+    .scanner-footer-controls {
+      margin-top: 20px;
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      width: 100%;
+      max-width: 360px;
+    }
+
+    /* ==========================================================================
+       DISEÑO PARA TABLET Y COMPUTADORA (>= 768px) — PORTAL EJECUTIVO APPLE
+       ========================================================================== */
+    @media (min-width: 768px) {
+      html, body { background: #f0f4f8; }
+
+      .app-shell {
+        max-width: 100%;
+        background: transparent;
+        padding-bottom: 60px;
+      }
+
+      .app-shell > .top-brand-bar {
+        width: 100%;
+        padding: 24px 32px 34px;
+        border-bottom-left-radius: 50% 34px;
+        border-bottom-right-radius: 50% 34px;
+        box-shadow: 0 4px 20px rgba(67, 152, 89, 0.18);
+      }
+
+      .app-shell > .top-brand-bar .top-brand-title { font-size: 1.75rem; }
+      .app-shell > .top-brand-bar .step-progress-track { max-width: 340px; height: 6px; }
+
+      .app-shell > .instruction-banner {
+        width: 100%;
+        margin-top: -26px;
+        padding: 44px 32px 34px;
+        text-align: center;
+        border-bottom: 1px solid #dbeafe;
+      }
+      .app-shell > .instruction-banner h2 { font-size: 1.7rem; max-width: 760px; margin: 0 auto 6px; }
+      .app-shell > .instruction-banner p { font-size: 1rem; max-width: 660px; margin: 0 auto; }
+
+      .app-container {
+        width: 92%;
+        max-width: 820px;
+        margin: -18px auto 0;
+        background: var(--surface-white);
+        border-radius: 24px;
+        box-shadow: 0 18px 45px rgba(10, 61, 98, 0.08), 0 2px 10px rgba(0, 0, 0, 0.03);
+        border: 1px solid rgba(226, 238, 252, 0.9);
+        position: relative;
+        z-index: 4;
+        overflow: hidden;
+      }
+
+      .app-container.wide-desktop-card {
+        max-width: 980px;
+      }
+
+      .view-body { padding: 36px 46px 44px; }
+
+      .cards-grid {
+        flex-direction: row;
+        max-width: 720px;
+        justify-content: center;
+      }
+
+      /* Si el paso tiene múltiples fotos, las organiza en cuadrícula en PC */
+      .step-fields-layout.multi-photos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        align-items: stretch;
+      }
+      .step-fields-layout.multi-photos-grid .photo-slot {
+        margin-bottom: 0;
+      }
+
+      .scanner-overlay-modal {
+        background: rgba(15, 23, 42, 0.65);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+
+      .scanner-modal-inner {
+        width: 100%;
+        max-width: 540px;
+        min-height: auto;
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+        max-height: 92vh;
+        overflow-y: auto;
+      }
     }
   </style>
 </head>
 <body>
-  <iframe 
-    src="https://script.google.com/macros/s/AKfycbyZvVON_P31g3trlE8Mn0BP-J74U-f2ut4mQKqui5vX_mfbWHz65iWk6ARKsygTAmho/exec"
-    allowfullscreen="true">
-  </iframe>
+  <div id="root"></div>
 
   <script>
-    window.onload = function() {
-      var iframe = document.querySelector('iframe');
-      // Nota: Muchos navegadores móviles bloquean el fullscreen automático sin interacción del usuario, 
-      // pero mantenemos tu código original por si el usuario instala la PWA o interactúa.
-      if (iframe.requestFullscreen) {
-        iframe.requestFullscreen().catch((err) => {
-          console.error('Error attempting to enable full-screen mode:', err.message);
+    // =========================================================================
+    //  CONFIGURACIÓN DE CONEXIÓN A GOOGLE APPS SCRIPT (GITHUB PAGES / LOCAL)
+    // =========================================================================
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzwsu0_oFeTA5RiX_MSt4sQjCwbaokMrdRQOSlN8o9WSyT2ljFWHBpqR7YCCDrPfW4/exec';
+    const LOGO = 'https://i.postimg.cc/LXYzQpMF/Logo_circular_Presta_Jara.png';
+    const SESSION_STORAGE_PREFIX = 'PRESTAJARA_SOLICITUD_STATE_V5_';
+
+    // Puente Híbrido: Usa google.script.run si corre dentro de GAS, o fetch POST si corre en GitHub Pages
+    async function serverCall(fn, ...args) {
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        return new Promise((resolve, reject) => {
+          google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[fn](...args);
         });
       }
+
+      const retries = 1;
+      for (let intento = 0; intento <= retries; intento++) {
+        try {
+          const response = await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: fn, args: args })
+          });
+          if (!response.ok) throw new Error('HTTP ' + response.status);
+          return await response.json();
+        } catch (err) {
+          if (intento === retries) throw new Error('Falla de conexión con el servidor. Verifica tu internet.');
+          await new Promise(r => setTimeout(r, 1200));
+        }
+      }
+    }
+
+    // Precarga global de modelos Face-API para las modalidades selfie_caracompleta y selfie_caranormal
+    window.faceApiReady = false;
+    window.faceApiLoading = false;
+    window.asegurarModelosFacialesGlobal = async function() {
+      if (window.faceApiReady || window.faceApiLoading) return;
+      if (typeof faceapi === 'undefined') return;
+      window.faceApiLoading = true;
+      try {
+        const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
+        await Promise.all([
+          faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+          faceapi.nets.faceLandmark68TinyNet.loadFromUri(MODEL_URL)
+        ]);
+        window.faceApiReady = true;
+      } catch (e) {
+        console.warn('Error cargando modelos faciales:', e);
+      } finally {
+        window.faceApiLoading = false;
+      }
     };
+
+    // Compresor de imágenes en cliente para subida rápida
+    window.comprimirImagenDataUrl = function(dataUrl, maxDim = 1500, quality = 0.82) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          let w = img.width, h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+            else { w = Math.round((w * maxDim) / h); h = maxDim; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = reject;
+        img.src = dataUrl;
+      });
+    };
+
+    window.mostrarAvisoPrivacidad = function() {
+      const avisoHTML = `
+        <div style="text-align: left; font-size: 13px; line-height: 1.5; height: 60vh; overflow-y: auto; padding-right: 10px;">
+          <p>De conformidad con la fracción I del artículo 16 y los artículos 8, 12, 15 y demás aplicables de la Ley Federal de Protección de Datos Personales en Posesión de los Particulares, <strong>PrestaJara S.A</strong> pone a su disposición el presente Aviso de Privacidad.</p>
+          <h4>I. Identidad y domicilio del responsable</h4>
+          <p><strong>PrestaJara S.A</strong>, con domicilio ubicado en <strong>colonia centro codigo postal 80000 Culiacan, Sinaloa</strong>, es la persona moral responsable del uso y protección de sus datos personales.</p>
+          <h4>II. Datos Personales Utilizados</h4>
+          <p>Para llevar a cabo las finalidades descritas en este Aviso de Privacidad, utilizaremos los siguientes datos personales de identificación, contacto, biometría y localización.</p>
+          <h4>III. Finalidad del tratamiento</h4>
+          <p>Los datos personales que recabamos serán utilizados para integración de su expediente crediticio, verificación de identidad y cumplimiento de obligaciones contractuales.</p>
+          <h4>IV. Derechos ARCO</h4>
+          <p>Para el ejercicio de cualquiera de los derechos ARCO, se deberá presentar una solicitud a través del correo electrónico: <strong>contacto@prestajara.com</strong>.</p>
+        </div>
+      `;
+      Swal.fire({ title: 'Aviso de Privacidad', html: avisoHTML, width: '600px', confirmButtonColor: '#439859', confirmButtonText: 'Aceptar' });
+    };
+
+    window.esNavegadorCompatible = function() {
+      const ua = navigator.userAgent.toLowerCase();
+      let esEdgePorMarca = false;
+      if (navigator.userAgentData && navigator.userAgentData.brands) {
+        navigator.userAgentData.brands.forEach(b => {
+          const name = b.brand.toLowerCase();
+          if (name.includes("edge") || name.includes("edg") || name.includes("microsoft")) esEdgePorMarca = true;
+        });
+      }
+      const tieneEdg = ua.includes("edg") || ua.includes("edge");
+      const tieneOpera = ua.includes("opr") || ua.includes("opera");
+      const tieneFirefox = ua.includes("firefox") || ua.includes("fxios");
+      const esChrome = ua.includes("chrome") || ua.includes("crios");
+      const esSafari = ua.includes("safari") && !esChrome;
+
+      if (esEdgePorMarca || tieneEdg || tieneOpera || tieneFirefox) return false;
+      if (esChrome || esSafari) return true;
+      return false;
+    };
+
+    window.mostrarAlertaBloqueo = function() {
+      Swal.fire({
+        title: 'Navegador no compatible',
+        html: '<p style="margin-bottom: 20px; color: #4a5568; font-size: 0.95rem;">Para que tu cámara funcione correctamente y no tengas problemas técnicos con tu solicitud, por favor utiliza <b>Google Chrome</b> o <b>Safari</b>.</p>' +
+              '<div style="text-align: center; margin-top: 15px;">' +
+              '<img src="https://i.postimg.cc/W1GMzWJq/Picsart-26-03-25-01-39-05-071.jpg" alt="Chrome o Safari" style="max-width: 180px; height: auto; border-radius: 8px;">' +
+              '</div>',
+        icon: 'warning',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: '#439859'
+      });
+    };
+
+    window.validarClabeOficial = function(clabe) {
+      if (!/^[0-9]{18}$/.test(clabe)) return false;
+      const ponderacion = [3, 2, 7, 3, 2, 7, 3, 2, 7, 3, 2, 7, 3, 2, 7, 3, 2];
+      let suma = 0;
+      for (let i = 0; i < 17; i++) suma += (parseInt(clabe[i], 10) * ponderacion[i]) % 10;
+      return parseInt(clabe[17], 10) === (10 - (suma % 10)) % 10;
+    };
+  </script>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useMemo } = React;
+
+    // Tipos de campo que usan el nuevo Escáner de Cámara en Vivo
+    const CAMERA_LIVE_TYPES = [
+      'foto_horizontal',
+      'foto_vertical',
+      'selfie_caracompleta',
+      'selfie_caranormal',
+      'front_photo',
+      'reverse_photo'
+    ];
+
+    // Tipos de campo que usan subida de archivo desde dispositivo (PDF, Imagen, Video)
+    const FILE_UPLOAD_TYPES = [
+      'archivo_documento',
+      'file',
+      'image',
+      'liveness',
+      'video_selfie'
+    ];
+
+    const ALL_MEDIA_TYPES = [...CAMERA_LIVE_TYPES, ...FILE_UPLOAD_TYPES, 'signature'];
+
+    /* ─── Utilidades de Texto y CURP ─── */
+    function quitarAcentos(cadena) {
+      return String(cadena || '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/Ñ/gi, "X");
+    }
+    function limpiarPreposiciones(cadena) {
+      const preposiciones = ["DA", "DAS", "DE", "DEL", "DER", "DI", "DIE", "DD", "EL", "LA", "LOS", "LAS", "LE", "LES", "MAC", "MC", "VAN", "VON", "Y"];
+      const palabras = String(cadena || '').split(' ').filter(p => p.trim() !== '' && !preposiciones.includes(p));
+      return palabras.length > 0 ? palabras.join(' ') : cadena;
+    }
+    function obtenerConsonanteInterna(palabra) {
+      if (!palabra || palabra.length < 2) return 'X';
+      const match = palabra.substring(1).match(/[BCDFGHJKLMNPQRSTVWXYZ]/i);
+      return match ? match[0].toUpperCase() : 'X';
+    }
+    function procesarNombreCurp(nombreLimpio) {
+      const nombres = String(nombreLimpio || '').trim().split(/\s+/);
+      if (nombres.length > 1 && ['MARIA', 'MA.', 'MA', 'JOSE', 'J.', 'J'].includes(nombres[0])) return nombres[1];
+      return nombres[0];
+    }
+
+    /* ─── Componentes Visuales Base ─── */
+    function HelperTooltip({ text }) {
+      if (!text) return null;
+      return (
+        <span className="tooltip-container">
+          <i className="fas fa-info-circle tooltip-icon"></i>
+          <span className="tooltip-text">{text}</span>
+        </span>
+      );
+    }
+
+    function ExampleImageRender({ url, hidden }) {
+      if (!url || hidden) return null;
+      let imgSrc = url;
+      const match1 = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+      const match2 = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+      const driveId = match1 ? match1[1] : (match2 ? match2[1] : null);
+      if (driveId) {
+        imgSrc = `https://drive.google.com/thumbnail?id=${driveId}&sz=w600`;
+      }
+      return <img src={imgSrc} className="example-image fade-in" alt="Ejemplo visual" />;
+    }
+
+    function ContactSupport({ id }) {
+      const msg = encodeURIComponent(`Hola, necesito ayuda de la solicitud de credito PrestaJara${id ? ' #' + id : ''}`);
+      return (
+        <div style={{marginTop: '28px', paddingTop: '20px', borderTop: '1px solid #e5e5ea', textAlign: 'center'}}>
+          <p style={{fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '14px'}}>¿Necesitas ayuda? Contáctanos</p>
+          <div style={{display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap'}}>
+            <a href={`https://wa.me/526672263954?text=${msg}`} target="_blank" style={{display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px', background: '#25D366', color: 'white', textDecoration: 'none', borderRadius: '22px', fontWeight: '600', fontSize: '0.9rem', boxShadow: '0 4px 10px rgba(37,211,102,0.2)'}}>
+              <i className="fab fa-whatsapp" style={{fontSize: '1.15rem'}}></i> WhatsApp
+            </a>
+            <a href={`mailto:contacto@prestajara.com?subject=Ayuda con solicitud&body=${msg}`} style={{display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px', background: '#1d1d1f', color: 'white', textDecoration: 'none', borderRadius: '22px', fontWeight: '600', fontSize: '0.9rem'}}>
+              <i className="fas fa-envelope" style={{fontSize: '1.1rem'}}></i> Correo
+            </a>
+          </div>
+        </div>
+      );
+    }
+
+    /* ==========================================================================
+       MODAL GLOBAL DE CÁMARA INTELIGENTE (5 ÁNGULOS / SELFIE NORMAL / DOCS CON REVIEW)
+       ========================================================================== */
+    const BIO_STEPS_DEF = [
+      { key: 'frente',    label: 'Frente',    ticks: [] },
+      { key: 'abajo',     label: 'Abajo',     ticks: [23,24,25,26,27,28,29,30,31,32,33,34,35,36,37] },
+      { key: 'arriba',    label: 'Arriba',    ticks: [53,54,55,56,57,58,59,0,1,2,3,4,5,6,7] },
+      { key: 'izquierda', label: 'Izquierda', ticks: [38,39,40,41,42,43,44,45,46,47,48,49,50,51,52] },
+      { key: 'derecha',   label: 'Derecha',   ticks: [8,9,10,11,12,13,14,15,16,17,18,19,20,21,22] }
+    ];
+
+    function SmartCameraModal({ request, onClose, onComplete }) {
+      const videoRef = useRef(null);
+      const streamRef = useRef(null);
+      const runningRef = useRef(false);
+      const bioIndexRef = useRef(0);
+      const holdRef = useRef(0);
+      const neutralPitchRef = useRef(null);
+      const capturedBioRef = useRef({});
+      const lastFrameRef = useRef(null);
+      const stableCountRef = useRef(0);
+
+      const [headerTitle, setHeaderTitle] = useState('Iniciando cámara...');
+      const [headerSub, setHeaderSub] = useState('Permite el acceso a tu cámara para continuar.');
+      const [pillText, setPillText] = useState('Iniciando cámara...');
+      const [pillIcon, setPillIcon] = useState(null);
+      const [activeTicks, setActiveTicks] = useState([]);
+      const [completedTicks, setCompletedTicks] = useState([]);
+      const [allGreen, setAllGreen] = useState(false);
+      const [showSuccess, setShowSuccess] = useState(false);
+      const [showManualBtn, setShowManualBtn] = useState(false);
+
+      // Estado para Confirmación de Nitidez (Post-Capture Review en Documentos)
+      const [reviewDataUrl, setReviewDataUrl] = useState(null);
+
+      const mode = request.mode; // 'bio5' | 'selfie1' | 'horizontal' | 'vertical'
+      const isFaceMode = mode === 'bio5' || mode === 'selfie1';
+
+      useEffect(() => {
+        iniciarCamaraModal();
+        return () => detenerStream();
+      }, []);
+
+      const detenerStream = () => {
+        runningRef.current = false;
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach(t => t.stop());
+          streamRef.current = null;
+        }
+      };
+
+      const iniciarCamaraModal = async () => {
+        setReviewDataUrl(null);
+        setShowSuccess(false);
+        setAllGreen(false);
+        bioIndexRef.current = 0;
+        holdRef.current = 0;
+        stableCountRef.current = 0;
+        lastFrameRef.current = null;
+
+        if (isFaceMode) {
+          window.asegurarModelosFacialesGlobal();
+          setHeaderTitle('Centra tu cara en el círculo');
+          setHeaderSub('Mantén una expresión natural y buena iluminación.');
+          setPillText('Iniciando cámara...');
+          setPillIcon(null);
+          setShowManualBtn(false);
+        } else {
+          setShowManualBtn(true);
+          if (mode === 'vertical') {
+            setHeaderTitle(request.label || 'Documento Vertical');
+            setHeaderSub('Encuadra tu estado de cuenta o comprobante completo y legible.');
+          } else {
+            setHeaderTitle(request.label || 'Documento Horizontal');
+            setHeaderSub('Encuadra tu identificación oficial dentro del marco sin reflejos.');
+          }
+          setPillText('Centra el documento en el marco');
+        }
+
+        const facingMode = isFaceMode ? 'user' : 'environment';
+        const constraints = {
+          audio: false,
+          video: {
+            facingMode: { ideal: facingMode },
+            width: { ideal: isFaceMode ? 1280 : 1920 },
+            height: { ideal: isFaceMode ? 720 : 1080 }
+          }
+        };
+
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia(constraints);
+          streamRef.current = stream;
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+            videoRef.current.onloadedmetadata = () => {
+              videoRef.current.play().catch(() => {});
+              runningRef.current = true;
+              if (mode === 'bio5') loopBio5();
+              else if (mode === 'selfie1') loopSelfie1();
+              else loopDocumento();
+            };
+          }
+        } catch (err) {
+          detenerStream();
+          Swal.fire({
+            icon: 'warning',
+            title: 'Permiso de cámara requerido',
+            text: 'No pudimos acceder a tu cámara. Verifica los permisos del navegador (Chrome o Safari).',
+            confirmButtonColor: '#439859'
+          });
+          onClose();
+        }
+      };
+
+      const extraerSelfieFrame = (maxDim = 960) => {
+        const video = videoRef.current;
+        if (!video) return null;
+        let w = video.videoWidth || 720;
+        let h = video.videoHeight || 720;
+        if (w > maxDim || h > maxDim) {
+          if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+          else { w = Math.round((w * maxDim) / h); h = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.save();
+        ctx.translate(w, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(video, 0, 0, w, h);
+        ctx.restore();
+        return canvas.toDataURL('image/jpeg', 0.82);
+      };
+
+      const extraerDocFrame = () => {
+        const video = videoRef.current;
+        if (!video) return null;
+        const vw = video.videoWidth || 1280;
+        const vh = video.videoHeight || 720;
+        const targetAspect = (mode === 'vertical') ? (3 / 4) : (85 / 54);
+        const videoAspect = vw / vh;
+
+        let sx = 0, sy = 0, sw = vw, sh = vh;
+        if (videoAspect > targetAspect) {
+          sw = Math.round(vh * targetAspect);
+          sx = Math.round((vw - sw) / 2);
+        } else {
+          sh = Math.round(vw / targetAspect);
+          sy = Math.round((vh - sh) / 2);
+        }
+
+        const maxOut = 1600;
+        let outW = sw, outH = sh;
+        if (outW > maxOut || outH > maxOut) {
+          if (outW > outH) { outH = Math.round((outH * maxOut) / outW); outW = maxOut; }
+          else { outW = Math.round((outW * maxOut) / outH); outH = maxOut; }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = outW; canvas.height = outH;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, sx, sy, sw, sh, 0, 0, outW, outH);
+        return canvas.toDataURL('image/jpeg', 0.85);
+      };
+
+      /* --- LOOP 1: BIOMETRÍA DE 5 ÁNGULOS (selfie_caracompleta) --- */
+      const loopBio5 = async () => {
+        if (!runningRef.current || mode !== 'bio5') return;
+        const video = videoRef.current;
+        if (!video) return;
+
+        if (!window.faceApiReady) {
+          setPillText('Preparando sensor biométrico...');
+          setTimeout(() => { if (runningRef.current && !window.faceApiReady) setShowManualBtn(true); }, 4500);
+          setTimeout(loopBio5, 350);
+          return;
+        }
+
+        const stepIdx = bioIndexRef.current;
+        const pasoActual = BIO_STEPS_DEF[stepIdx];
+        let doneTicks = [];
+        for (let i = 0; i < stepIdx; i++) doneTicks = doneTicks.concat(BIO_STEPS_DEF[i].ticks);
+        setActiveTicks(pasoActual.ticks);
+        setCompletedTicks(doneTicks);
+
+        try {
+          const det = await faceapi
+            .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.45 }))
+            .withFaceLandmarks(true);
+
+          if (!det) {
+            holdRef.current = 0;
+            setAllGreen(false);
+            setPillIcon(null);
+            setPillText('Coloca tu rostro dentro del círculo');
+          } else {
+            const vw = video.videoWidth || 640;
+            const vh = video.videoHeight || 480;
+            const box = det.detection.box;
+            const faceRatio = box.width / Math.min(vw, vh);
+
+            if (faceRatio > 0.78) {
+              holdRef.current = 0;
+              setPillIcon(null);
+              setPillText('Aléjate un poco');
+            } else if (faceRatio < 0.25) {
+              holdRef.current = 0;
+              setPillIcon(null);
+              setPillText('Acércate un poco');
+            } else {
+              const pos = det.landmarks.positions;
+              const nose = pos[30], leftJaw = pos[0], rightJaw = pos[16], chin = pos[8], leftEye = pos[36], rightEye = pos[45];
+              const faceW = Math.max(1, rightJaw.x - leftJaw.x);
+              const yawRatio = (nose.x - leftJaw.x) / faceW;
+              const eyesMidY = (leftEye.y + rightEye.y) / 2;
+              const lowerH = Math.max(1, chin.y - eyesMidY);
+              const pitchRatio = (nose.y - eyesMidY) / lowerH;
+              const basePitch = neutralPitchRef.current || 0.36;
+
+              let cumple = false;
+              if (pasoActual.key === 'frente') {
+                setHeaderTitle('Centra tu cara en el círculo');
+                setHeaderSub('Mira de frente a la cámara.');
+                if (yawRatio > 0.41 && yawRatio < 0.59 && pitchRatio > 0.27 && pitchRatio < 0.47) {
+                  cumple = true;
+                  setAllGreen(true);
+                  setPillIcon(null);
+                  setPillText('Mantén la posición...');
+                } else {
+                  setAllGreen(false);
+                  setPillIcon(null);
+                  setPillText('Mira de frente a la cámara');
+                }
+              } else if (pasoActual.key === 'abajo') {
+                setHeaderTitle('Movimientos de cabeza');
+                setHeaderSub('Sigue las instrucciones dentro del círculo.');
+                setPillIcon('fa-arrow-down');
+                setPillText('Mueve la cabeza hacia abajo');
+                if (pitchRatio > basePitch + 0.045 || (box.y + box.height / 2) > vh * 0.56) cumple = true;
+              } else if (pasoActual.key === 'arriba') {
+                setPillIcon('fa-arrow-up');
+                setPillText('Mueve la cabeza hacia arriba');
+                if (pitchRatio < basePitch - 0.038 || (box.y + box.height / 2) < vh * 0.43) cumple = true;
+              } else if (pasoActual.key === 'izquierda') {
+                setPillIcon('fa-arrow-left');
+                setPillText('Mueve la cabeza a la izquierda');
+                if (yawRatio > 0.56) cumple = true;
+              } else if (pasoActual.key === 'derecha') {
+                setPillIcon('fa-arrow-right');
+                setPillText('Mueve la cabeza a la derecha');
+                if (yawRatio < 0.44) cumple = true;
+              }
+
+              if (cumple) {
+                holdRef.current += 1;
+                if (holdRef.current >= 2) {
+                  if (pasoActual.key === 'frente') neutralPitchRef.current = pitchRatio;
+                  const b64 = extraerSelfieFrame(920);
+                  capturedBioRef.current[pasoActual.key] = b64;
+                  if (navigator.vibrate) navigator.vibrate(35);
+
+                  bioIndexRef.current += 1;
+                  holdRef.current = 0;
+
+                  if (bioIndexRef.current >= BIO_STEPS_DEF.length) {
+                    runningRef.current = false;
+                    setAllGreen(true);
+                    setShowSuccess(true);
+                    if (navigator.vibrate) navigator.vibrate([40, 60, 80]);
+                    setTimeout(() => {
+                      detenerStream();
+                      onComplete({ type: 'bio5', anglesDataUrls: capturedBioRef.current });
+                    }, 950);
+                    return;
+                  }
+                }
+              } else {
+                holdRef.current = 0;
+              }
+            }
+          }
+        } catch (e) {}
+
+        if (runningRef.current && mode === 'bio5') {
+          setTimeout(() => requestAnimationFrame(loopBio5), 160);
+        }
+      };
+
+      /* --- LOOP 2: SELFIE FRONTAL ÚNICA (selfie_caranormal) --- */
+      const loopSelfie1 = async () => {
+        if (!runningRef.current || mode !== 'selfie1') return;
+        const video = videoRef.current;
+        if (!video) return;
+
+        if (!window.faceApiReady) {
+          setPillText('Mira de frente a la cámara');
+          setShowManualBtn(true);
+          setTimeout(loopSelfie1, 400);
+          return;
+        }
+
+        try {
+          const det = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.45 }));
+          if (!det) {
+            holdRef.current = 0;
+            setAllGreen(false);
+            setPillText('Centra tu cara en el círculo');
+          } else {
+            const vw = video.videoWidth || 640;
+            const vh = video.videoHeight || 480;
+            const faceRatio = det.box.width / Math.min(vw, vh);
+            if (faceRatio > 0.78) {
+              holdRef.current = 0;
+              setPillText('Aléjate un poco');
+            } else if (faceRatio < 0.25) {
+              holdRef.current = 0;
+              setPillText('Acércate un poco');
+            } else {
+              setAllGreen(true);
+              setPillText('Mantén tu rostro fijo...');
+              holdRef.current += 1;
+              if (holdRef.current >= 4) {
+                runningRef.current = false;
+                const dataUrl = extraerSelfieFrame(1000);
+                setShowSuccess(true);
+                if (navigator.vibrate) navigator.vibrate(60);
+                setTimeout(() => {
+                  detenerStream();
+                  onComplete({ type: 'single', dataUrl });
+                }, 850);
+                return;
+              }
+            }
+          }
+        } catch (e) {
+          setShowManualBtn(true);
+        }
+
+        if (runningRef.current && mode === 'selfie1') {
+          setTimeout(() => requestAnimationFrame(loopSelfie1), 180);
+        }
+      };
+
+      /* --- LOOP 3: ESCÁNER DE DOCUMENTOS CON CONFIRMACIÓN DE NITIDEZ --- */
+      const loopDocumento = () => {
+        if (!runningRef.current || isFaceMode) return;
+        const video = videoRef.current;
+        if (!video) return;
+
+        const sw = 64, sh = 48;
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = sw; tempCanvas.height = sh;
+        const ctx = tempCanvas.getContext('2d', { willReadFrequently: true });
+        ctx.drawImage(video, 0, 0, sw, sh);
+        const curr = ctx.getImageData(0, 0, sw, sh);
+
+        let contrastSum = 0;
+        for (let i = 5; i < curr.data.length - 4; i += 8) {
+          contrastSum += Math.abs(curr.data[i] - curr.data[i - 4]);
+        }
+        const avgContrast = contrastSum / ((sw * sh) / 2);
+
+        if (lastFrameRef.current) {
+          let diff = 0;
+          for (let i = 1; i < curr.data.length; i += 4) {
+            diff += Math.abs(curr.data[i] - lastFrameRef.current.data[i]);
+          }
+          const avgMotion = diff / (sw * sh);
+
+          if (avgContrast < 4.2) {
+            stableCountRef.current = 0;
+            setPillText('Centra el documento en el marco');
+          } else if (avgMotion < 5.5) {
+            stableCountRef.current += 1;
+            if (stableCountRef.current >= 3) setPillText('Mantén firme... enfocando');
+            if (stableCountRef.current >= 8) {
+              dispararRevisionDocumento();
+              return;
+            }
+          } else {
+            stableCountRef.current = 0;
+            setPillText('Centra el documento en el marco');
+          }
+        }
+
+        lastFrameRef.current = curr;
+        if (runningRef.current && !isFaceMode) {
+          setTimeout(() => requestAnimationFrame(loopDocumento), 160);
+        }
+      };
+
+      const dispararRevisionDocumento = () => {
+        runningRef.current = false;
+        const dataUrl = extraerDocFrame();
+        if (navigator.vibrate) navigator.vibrate(45);
+        setReviewDataUrl(dataUrl);
+        setHeaderTitle('Verifica la nitidez');
+        setHeaderSub('Asegúrate de que todos los textos y bordes se lean con claridad y sin reflejos.');
+      };
+
+      const handleManualCapture = () => {
+        if (!isFaceMode) {
+          dispararRevisionDocumento();
+        } else if (mode === 'selfie1') {
+          runningRef.current = false;
+          const dataUrl = extraerSelfieFrame(1000);
+          detenerStream();
+          onComplete({ type: 'single', dataUrl });
+        } else if (mode === 'bio5') {
+          runningRef.current = false;
+          const dataUrl = extraerSelfieFrame(920);
+          detenerStream();
+          onComplete({
+            type: 'bio5',
+            anglesDataUrls: { frente: dataUrl, abajo: dataUrl, arriba: dataUrl, izquierda: dataUrl, derecha: dataUrl }
+          });
+        }
+      };
+
+      const aceptarFotoRevisada = () => {
+        setShowSuccess(true);
+        setTimeout(() => {
+          detenerStream();
+          onComplete({ type: 'single', dataUrl: reviewDataUrl });
+        }, 550);
+      };
+
+      const repetirFotoRevisada = () => {
+        setReviewDataUrl(null);
+        stableCountRef.current = 0;
+        lastFrameRef.current = null;
+        if (mode === 'vertical') {
+          setHeaderTitle(request.label || 'Documento Vertical');
+          setHeaderSub('Encuadra tu estado de cuenta o comprobante completo y legible.');
+        } else {
+          setHeaderTitle(request.label || 'Documento Horizontal');
+          setHeaderSub('Encuadra tu identificación oficial dentro del marco sin reflejos.');
+        }
+        setPillText('Centra el documento en el marco');
+        runningRef.current = true;
+        loopDocumento();
+      };
+
+      // Construcción de las 60 líneas del anillo Face ID
+      const ticksElements = useMemo(() => {
+        const arr = [];
+        const total = 60, cx = 150, cy = 150, rIn = 126, rOut = 140;
+        for (let i = 0; i < total; i++) {
+          const deg = i * (360 / total) - 90;
+          const rad = (deg * Math.PI) / 180;
+          arr.push({
+            idx: i,
+            x1: (cx + rIn * Math.cos(rad)).toFixed(2),
+            y1: (cy + rIn * Math.sin(rad)).toFixed(2),
+            x2: (cx + rOut * Math.cos(rad)).toFixed(2),
+            y2: (cy + rOut * Math.sin(rad)).toFixed(2)
+          });
+        }
+        return arr;
+      }, []);
+
+      return (
+        <div className="scanner-overlay-modal fade-in">
+          <div className="scanner-modal-inner">
+            <header className="top-brand-bar">
+              <div className="top-brand-inner">
+                <img src={LOGO} alt="Logo" />
+                <div className="top-brand-title">PrestaJara</div>
+              </div>
+            </header>
+
+            <section className="instruction-banner">
+              <h2>{headerTitle}</h2>
+              <p>{headerSub}</p>
+            </section>
+
+            <div className="scanner-stage-body">
+              {isFaceMode ? (
+                <div className="face-scanner-box">
+                  <svg className="face-ticks-svg" viewBox="0 0 300 300">
+                    {ticksElements.map(t => {
+                      const isDone = allGreen || completedTicks.includes(t.idx);
+                      const isTarget = !isDone && activeTicks.includes(t.idx);
+                      return (
+                        <line
+                          key={t.idx}
+                          x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+                          className={`tick-line ${isDone ? 'completed' : ''} ${isTarget ? 'active-target' : ''}`}
+                        />
+                      );
+                    })}
+                  </svg>
+
+                  <div className={`face-circle-viewport ${allGreen ? 'ready-green' : ''}`}>
+                    <video ref={videoRef} autoPlay playsInline muted></video>
+
+                    {!showSuccess && (
+                      <div className="floating-pill-prompt">
+                        {pillIcon && <i className={`fas ${pillIcon}`}></i>}
+                        <span>{pillText}</span>
+                      </div>
+                    )}
+
+                    <div className={`face-success-cover ${showSuccess ? 'show' : ''}`} style={{borderRadius: '50%'}}>
+                      <svg className="checkmark-svg" viewBox="0 0 52 52">
+                        <path d="M14 27l8 8 16-16"></path>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="doc-scanner-box">
+                  <div className={`doc-viewport-frame ${mode === 'vertical' ? 'vertical-doc' : ''}`}>
+                    <video
+                      ref={videoRef}
+                      autoPlay
+                      playsInline
+                      muted
+                      style={{ display: reviewDataUrl ? 'none' : 'block' }}
+                    ></video>
+
+                    {reviewDataUrl && (
+                      <img src={reviewDataUrl} className="review-capture-img fade-in" alt="Captura para revisión" />
+                    )}
+
+                    {!reviewDataUrl && !showSuccess && (
+                      <div className="floating-pill-prompt">
+                        <span>{pillText}</span>
+                      </div>
+                    )}
+
+                    <div className={`face-success-cover ${showSuccess ? 'show' : ''}`} style={{borderRadius: '14px'}}>
+                      <svg className="checkmark-svg" viewBox="0 0 52 52">
+                        <path d="M14 27l8 8 16-16"></path>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* CONTROLES DE CÁMARA O DE CONFIRMACIÓN DE NITIDEZ */}
+              {reviewDataUrl ? (
+                <div className="scanner-footer-controls fade-in">
+                  <button type="button" className="btn btn-secondary" onClick={repetirFotoRevisada} style={{flex: 1}}>
+                    <i className="fas fa-redo"></i> Repetir foto
+                  </button>
+                  <button type="button" className="btn btn-primary" onClick={aceptarFotoRevisada} style={{flex: 1}}>
+                    <i className="fas fa-check"></i> Usar foto
+                  </button>
+                </div>
+              ) : (
+                <div className="scanner-footer-controls">
+                  {showManualBtn && (
+                    <button type="button" className="btn btn-primary" onClick={handleManualCapture} style={{flex: 1}}>
+                      <i className="fas fa-camera"></i> Capturar ahora
+                    </button>
+                  )}
+                  <button type="button" className="btn btn-secondary" onClick={() => { detenerStream(); onClose(); }} style={{flex: 1, maxWidth: '180px'}}>
+                    Cancelar
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ==========================================================================
+       TARJETA DE CAPTURA EN VIVO (foto_horizontal, foto_vertical, selfie_caracompleta, selfie_caranormal)
+       ========================================================================== */
+    function LiveCameraSlotField({ field, value, onOpenScanner, error }) {
+      const t = field.type;
+      const isBio5 = t === 'selfie_caracompleta';
+      const isSelfie1 = t === 'selfie_caranormal';
+      const isVert = t === 'foto_vertical';
+
+      const hasCaptured = !!(value && (value.preview || value.url || value.base64));
+      const status = value?.status; // 'uploading' | 'uploaded' | 'error'
+
+      let iconCls = 'fa-id-card';
+      let btnLabel = 'Capturar documento';
+      let defaultSub = 'Encuadra tu identificación dentro del marco sin reflejos.';
+
+      if (isBio5) {
+        iconCls = 'fa-user-check';
+        btnLabel = 'Iniciar escaneo de 5 ángulos';
+        defaultSub = 'Completa los 5 movimientos faciales frente a la cámara.';
+      } else if (isSelfie1) {
+        iconCls = 'fa-camera';
+        btnLabel = 'Tomar selfie frontal';
+        defaultSub = 'Toma una selfie mirando de frente a la cámara.';
+      } else if (isVert) {
+        iconCls = 'fa-file-invoice';
+        btnLabel = 'Escanear documento vertical';
+        defaultSub = 'Captura tu estado de cuenta o comprobante de forma vertical y nítida.';
+      }
+
+      return (
+        <div className={`photo-slot fade-in ${hasCaptured ? 'has-image' : ''} ${error ? 'slot-error' : ''}`}>
+          <div style={{width: '100%'}}>
+            <div className="slot-header">
+              <i className={`fas ${iconCls}`} style={{color: 'var(--verde-jara)'}}></i>
+              <span>{field.label}{field.required && <span style={{color: 'var(--danger)', marginLeft: 3}}>*</span>}</span>
+              <HelperTooltip text={field.helperText} />
+            </div>
+            <p className="slot-sub">{field.placeholder || defaultSub}</p>
+
+            {status === 'uploading' && (
+              <div className="upload-badge uploading">
+                <i className="fas fa-sync fa-spin"></i> Sincronizando en la nube...
+              </div>
+            )}
+            {status === 'uploaded' && (
+              <div className="upload-badge uploaded">
+                <i className="fas fa-check-circle"></i> Sincronizada en la nube
+              </div>
+            )}
+            {status === 'error' && (
+              <div className="upload-badge error">
+                <i className="fas fa-exclamation-triangle"></i> Pendiente de reintento al enviar
+              </div>
+            )}
+
+            {isBio5 && (
+              <div className="selfie-angles-row">
+                {['Frente', 'Abajo', 'Arriba', 'Izquierda', 'Derecha'].map(ang => (
+                  <span key={ang} className={`angle-chip ${hasCaptured ? 'done' : ''}`}>{ang}</span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+            <ExampleImageRender url={field.exampleImage} hidden={hasCaptured} />
+
+            {hasCaptured && value.preview && (
+              <img src={value.preview} className="preview-image fade-in" alt={field.label} />
+            )}
+
+            <button
+              type="button"
+              className="btn btn-secondary"
+              style={{maxWidth: '270px', width: '100%'}}
+              onClick={() => onOpenScanner(field)}
+            >
+              <i className={`fas ${hasCaptured ? 'fa-redo' : 'fa-camera'}`}></i>
+              {hasCaptured ? 'Volver a capturar' : btnLabel}
+            </button>
+
+            {error && <div className="field-error" style={{justifyContent: 'center', marginTop: '10px'}}><i className="fas fa-exclamation-circle"></i>{error}</div>}
+          </div>
+        </div>
+      );
+    }
+
+    /* ==========================================================================
+       SUBIDA DE ARCHIVO DESDE DISPOSITIVO (archivo_documento, file, image, video_selfie)
+       ========================================================================== */
+    function DeviceFileUploadField({ field, value, onFileSelected, onClearFile, error }) {
+      const inputRef = useRef(null);
+      const isVideo = ['liveness', 'video_selfie'].includes(field.type);
+      const isImageOnly = field.type === 'image';
+      const accept = isVideo ? 'video/*' : (isImageOnly ? 'image/*' : '.pdf,image/*,.doc,.docx');
+      const hasFile = !!(value && (value.url || value.base64 || value.preview));
+      const status = value?.status;
+
+      const handleFile = async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        const maxMB = isVideo ? 25 : 15;
+        if (file.size > maxMB * 1024 * 1024) {
+          Swal.fire({ icon: 'warning', title: 'Archivo demasiado grande', text: `El límite permitido es ${maxMB} MB.`, confirmButtonColor: '#439859' });
+          e.target.value = '';
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = async (evt) => {
+          let dataUrl = evt.target.result;
+          let mime = file.type || 'application/octet-stream';
+          const isImg = mime.startsWith('image/');
+
+          if (isImg) {
+            try {
+              dataUrl = await window.comprimirImagenDataUrl(dataUrl, 1500, 0.82);
+              mime = 'image/jpeg';
+            } catch (err) {}
+          }
+
+          onFileSelected(field, {
+            base64: dataUrl.split(',')[1],
+            name: file.name,
+            mime: mime,
+            preview: (isImg || isVideo) ? dataUrl : null,
+            isVideo: isVideo
+          });
+        };
+        reader.readAsDataURL(file);
+      };
+
+      return (
+        <div className={`photo-slot fade-in ${hasFile ? 'has-image' : ''} ${error ? 'slot-error' : ''}`}>
+          <div style={{width: '100%'}}>
+            <div className="slot-header">
+              <i className="fas fa-file-arrow-up" style={{color: 'var(--verde-jara)'}}></i>
+              <span>{field.label}{field.required && <span style={{color: 'var(--danger)', marginLeft: 3}}>*</span>}</span>
+              <HelperTooltip text={field.helperText} />
+            </div>
+            <p className="slot-sub">
+              {field.placeholder || (isVideo ? 'Sube o graba un video corto (Máx 25 MB)' : 'Selecciona un archivo PDF o imagen desde tu dispositivo.')}
+            </p>
+
+            {status === 'uploading' && (
+              <div className="upload-badge uploading"><i className="fas fa-sync fa-spin"></i> Subiendo documento a la nube...</div>
+            )}
+            {status === 'uploaded' && (
+              <div className="upload-badge uploaded"><i className="fas fa-check-circle"></i> Documento sincronizado</div>
+            )}
+          </div>
+
+          <div style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+            <ExampleImageRender url={field.exampleImage} hidden={hasFile} />
+
+            {hasFile && value.preview && !value.isVideo && (
+              <img src={value.preview} className="preview-image fade-in" alt="Vista previa" />
+            )}
+            {hasFile && value.preview && value.isVideo && (
+              <video src={value.preview} controls style={{width: '100%', maxWidth: '260px', borderRadius: '12px', marginBottom: '12px'}}></video>
+            )}
+            {hasFile && !value.preview && (
+              <div style={{display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: 'var(--verde-jara-light)', color: '#1b4d29', borderRadius: '12px', fontWeight: 600, fontSize: '0.88rem', marginBottom: '14px', maxWidth: '100%'}}>
+                <i className="fas fa-file-pdf"></i>
+                <span style={{overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>{value.name || 'Documento adjunto'}</span>
+              </div>
+            )}
+
+            <input ref={inputRef} type="file" accept={accept} style={{display: 'none'}} onChange={handleFile} />
+
+            <div style={{display: 'flex', gap: '10px', width: '100%', justifyContent: 'center'}}>
+              <button type="button" className="btn btn-secondary" style={{maxWidth: '260px', width: '100%'}} onClick={() => inputRef.current && inputRef.current.click()}>
+                <i className="fas fa-folder-open"></i> {hasFile ? 'Cambiar archivo' : 'Subir archivo / PDF'}
+              </button>
+              {hasFile && (
+                <button type="button" className="btn btn-ghost" onClick={() => { onClearFile(field.name); if (inputRef.current) inputRef.current.value = ''; }} title="Quitar archivo">
+                  <i className="fas fa-trash-alt" style={{color: 'var(--danger)'}}></i>
+                </button>
+              )}
+            </div>
+
+            {error && <div className="field-error" style={{justifyContent: 'center', marginTop: '10px'}}><i className="fas fa-exclamation-circle"></i>{error}</div>}
+          </div>
+        </div>
+      );
+    }
+
+    /* ==========================================================================
+       PANTALLA DE BIENVENIDA Y CONSULTA DE ESTATUS
+       ========================================================================== */
+    function WelcomeScreen({ forms, onSelect }) {
+      const showCheck = forms.some(f => f.show_status_check?.toLowerCase() === 'yes');
+      const [searchId, setSearchId] = useState('');
+      const [statusObj, setStatusObj] = useState(null);
+      const [loading, setLoading] = useState(false);
+
+      const handleSearch = async () => {
+        if (!searchId.trim()) return;
+        setLoading(true);
+        setStatusObj(null);
+        try {
+          const res = await serverCall('checkApplicationStatus', searchId.trim());
+          if (res.success) {
+            setStatusObj({ id: searchId.trim(), status: res.status });
+          } else {
+            Swal.fire('Error', res.message, 'error');
+          }
+        } catch (e) {
+          Swal.fire('Error', 'Falla al consultar estatus.', 'error');
+        }
+        setLoading(false);
+      };
+
+      const getStatusColor = (s) => {
+        if (s?.toLowerCase() === 'rechazada') return '#ff3b30';
+        if (s?.toLowerCase() === 'aceptada') return '#439859';
+        return '#ff9500';
+      };
+
+      return (
+        <div className="view-body fade-in">
+          <div style={{textAlign: 'center', marginBottom: '22px'}}>
+            <img src={LOGO} alt="PrestaJara" style={{width: '96px', height: '96px', borderRadius: '50%', boxShadow: '0 8px 24px rgba(67,152,89,0.22)'}} />
+          </div>
+
+          <div className="cards-grid">
+            {forms.map(f => (
+              <div key={f.id} className="btn-card" onClick={() => onSelect(f.id)}>
+                <div className="icono-contenedor"><i className={`${f.icon || 'fas fa-file-alt'} card-logo`}></i></div>
+                <div className="card-title">{f.title}</div>
+                {f.subtitle && <div className="card-subtitle">{f.subtitle}</div>}
+              </div>
+            ))}
+          </div>
+
+          {showCheck && (
+            <div style={{marginTop: '36px', background: '#fafafa', border: '1.5px solid #e5e5ea', borderRadius: '20px', padding: '22px 18px', textAlign: 'center'}}>
+              <h3 style={{fontSize: '1.08rem', color: 'var(--text-main)', marginBottom: '12px'}}>Consultar Estatus de Solicitud</h3>
+              <div style={{display: 'flex', gap: '10px', maxWidth: '380px', margin: '0 auto'}}>
+                <input type="text" className="form-control" placeholder="Número de folio (Ej. 12)" value={searchId} onChange={e => setSearchId(e.target.value)} />
+                <button className="btn btn-primary" style={{width: 'auto', padding: '0 20px'}} onClick={handleSearch} disabled={loading || !searchId.trim()}>
+                  {loading ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-search"></i>}
+                </button>
+              </div>
+              {statusObj && (
+                <div className="fade-in" style={{marginTop: '16px', padding: '14px', background: '#fff', borderRadius: '14px', border: '1px solid #e5e5ea'}}>
+                  <p style={{fontSize: '0.88rem', color: 'var(--text-muted)', marginBottom: '6px'}}>Solicitud <strong>#{statusObj.id}</strong>:</p>
+                  <span style={{display: 'inline-block', padding: '6px 16px', borderRadius: '20px', backgroundColor: getStatusColor(statusObj.status), color: '#fff', fontWeight: 700, fontSize: '0.92rem'}}>
+                    {statusObj.status.toUpperCase()}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
+          <ContactSupport />
+        </div>
+      );
+    }
+
+    /* ==========================================================================
+       COMPONENTE EMAIL + OTP + CAPTCHA
+       ========================================================================== */
+    function EmailOtpGroup({ field, value, onChange, error, onDuplicateResult }) {
+      const [localEmail, setLocalEmail] = useState(value || '');
+      const [step, setStep] = useState(value ? 'verified' : 'input');
+      const [loading, setLoading] = useState(false);
+      const [captchaText, setCaptchaText] = useState('');
+      const [userCaptcha, setUserCaptcha] = useState('');
+      const [otpInput, setOtpInput] = useState('');
+      const canvasRef = useRef(null);
+
+      const maxLen = field.maxLength ? parseInt(field.maxLength, 10) : undefined;
+      const isUpper = field.forceUppercase && field.forceUppercase.toLowerCase() === 'yes';
+
+      useEffect(() => {
+        if (value) {
+          setLocalEmail(value);
+          setStep('verified');
+        }
+      }, [value]);
+
+      useEffect(() => {
+        if (step === 'captcha') generarCaptcha();
+      }, [step]);
+
+      const handleEmailChange = (val) => {
+        let cleanVal = isUpper ? val.toUpperCase() : val;
+        setLocalEmail(cleanVal);
+        onDuplicateResult(field.name, false);
+        if (value) onChange('');
+      };
+
+      const iniciarVerificacion = async () => {
+        const emailTrimmed = localEmail.trim();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrimmed)) {
+          Swal.fire({ icon: 'warning', title: 'Correo inválido', text: 'Ingresa un correo electrónico válido.', confirmButtonColor: '#439859' });
+          return;
+        }
+
+        setLoading(true);
+        try {
+          const resDup = await serverCall('checkDuplicate', emailTrimmed, field.name);
+          const isDup = resDup.success && resDup.data?.exists;
+          onDuplicateResult(field.name, isDup);
+          if (isDup) {
+            setLoading(false);
+            Swal.fire({ icon: 'error', title: 'Correo Registrado', text: 'Este correo ya existe en la base de datos.', confirmButtonColor: '#439859' });
+            return;
+          }
+        } catch (e) {
+          setLoading(false);
+          Swal.fire('Error', 'Falla de conexión al verificar correo.', 'error');
+          return;
+        }
+
+        try {
+          const res = await serverCall('verificarLimiteDiarioOTP');
+          setLoading(false);
+          if (res.usarCaptcha) setStep('captcha');
+          else ejecutarEnvioOTP(emailTrimmed);
+        } catch (e) {
+          setLoading(false);
+          setStep('captcha');
+        }
+      };
+
+      const generarCaptcha = () => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+        let text = '';
+        for (let i = 0; i < 6; i++) text += chars.charAt(Math.floor(Math.random() * chars.length));
+        setCaptchaText(text);
+        setUserCaptcha('');
+
+        for (let i = 0; i < 35; i++) {
+          ctx.fillStyle = `rgba(${Math.random()*200},${Math.random()*200},${Math.random()*200},0.28)`;
+          ctx.beginPath();
+          ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.font = 'bold 30px Inter, sans-serif';
+        ctx.fillStyle = '#0a3d62';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        for (let i = 0; i < text.length; i++) {
+          ctx.save();
+          ctx.translate(32 * i + 30, canvas.height / 2);
+          ctx.rotate((Math.random() - 0.5) * 0.45);
+          ctx.fillText(text[i], 0, 0);
+          ctx.restore();
+        }
+      };
+
+      const verificarCaptcha = () => {
+        if (userCaptcha.trim().toUpperCase() !== captchaText.toUpperCase()) {
+          Swal.fire({ icon: 'error', title: 'Código incorrecto', text: 'El texto no coincide con la imagen.', confirmButtonColor: '#ff3b30' });
+          generarCaptcha();
+          return;
+        }
+        setStep('verified');
+        onChange(localEmail.trim());
+      };
+
+      const ejecutarEnvioOTP = async (emailToUse) => {
+        setLoading(true);
+        try {
+          const res = await serverCall('enviarCodigoOTP', emailToUse || localEmail.trim());
+          setLoading(false);
+          if (res.status === 'success') {
+            setStep('otp');
+            setOtpInput('');
+          } else if (res.usarCaptcha) {
+            setStep('captcha');
+          } else {
+            Swal.fire('Error', res.message, 'error');
+            setStep('input');
+          }
+        } catch (e) {
+          setLoading(false);
+          Swal.fire('Error', 'Falla al enviar código.', 'error');
+        }
+      };
+
+      const confirmarOTP = async () => {
+        if (otpInput.length !== 6) return;
+        setLoading(true);
+        try {
+          const res = await serverCall('verificarCodigoOTP', localEmail.trim(), otpInput);
+          setLoading(false);
+          if (res.status === 'success') {
+            setStep('verified');
+            onChange(localEmail.trim());
+          } else {
+            Swal.fire('Incorrecto', res.message, 'error');
+          }
+        } catch (e) {
+          setLoading(false);
+          Swal.fire('Error', 'Falla al verificar código.', 'error');
+        }
+      };
+
+      const reiniciarTodo = () => {
+        setStep('input');
+        onChange('');
+        setOtpInput('');
+        setUserCaptcha('');
+      };
+
+      return (
+        <div className="form-group fade-in">
+          <label>
+            {field.label}{field.required && <span style={{color:'var(--danger)',marginLeft:3}}>*</span>}
+            <HelperTooltip text={field.helperText} />
+          </label>
+          <ExampleImageRender url={field.exampleImage} hidden={false} />
+
+          {step === 'input' && (
+            <div className="cp-row">
+              <div className="form-group" style={{marginBottom: 0}}>
+                <input type="email" className={error ? 'input-error' : ''} placeholder={field.placeholder || "ejemplo@correo.com"} maxLength={maxLen} value={localEmail} onChange={e => handleEmailChange(e.target.value)} />
+                {error && <div className="field-error"><i className="fas fa-exclamation-circle"></i>{error}</div>}
+              </div>
+              <div className="btn-container">
+                <button type="button" className="btn btn-primary" onClick={iniciarVerificacion} disabled={loading || !localEmail.trim()}>
+                  {loading ? <i className="fas fa-spinner fa-spin"></i> : 'Verificar'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {step === 'captcha' && (
+            <div className="otp-stage fade-in">
+              <p style={{fontWeight: 600, marginBottom: '10px'}}>Escribe los caracteres de la imagen</p>
+              <div className="captcha-container">
+                <canvas ref={canvasRef} className="captcha-canvas" width="220" height="70"></canvas>
+                <button type="button" className="btn-reload-captcha" onClick={generarCaptcha}><i className="fas fa-sync-alt"></i></button>
+              </div>
+              <input type="text" className="form-control" placeholder="Código de seguridad" value={userCaptcha} onChange={e => setUserCaptcha(e.target.value)} style={{maxWidth: '240px', margin: '0 auto 14px', textAlign: 'center', fontWeight: 700}} />
+              <div style={{display: 'flex', gap: '10px', justifyContent: 'center'}}>
+                <button type="button" className="btn btn-ghost" onClick={reiniciarTodo}>Cancelar</button>
+                <button type="button" className="btn btn-primary" style={{maxWidth: '160px'}} onClick={verificarCaptcha} disabled={!userCaptcha.trim()}>Confirmar</button>
+              </div>
+            </div>
+          )}
+
+          {step === 'otp' && (
+            <div className="otp-stage fade-in">
+              <p style={{color: 'var(--text-muted)', fontSize: '0.9rem'}}>Código de 6 dígitos enviado a:</p>
+              <strong style={{display: 'block', marginBottom: '14px'}}>{localEmail}</strong>
+              <input type="text" className="form-control" inputMode="numeric" placeholder="000000" maxLength="6" value={otpInput} onChange={e => setOtpInput(e.target.value.replace(/[^0-9]/g, ''))} style={{letterSpacing: '8px', textAlign: 'center', fontSize: '1.5rem', fontWeight: 700, maxWidth: '220px', margin: '0 auto 14px'}} />
+              <button type="button" className="btn btn-primary" onClick={confirmarOTP} disabled={loading || otpInput.length !== 6} style={{maxWidth: '220px', margin: '0 auto 10px'}}>
+                {loading ? <i className="fas fa-spinner fa-spin"></i> : 'Confirmar código'}
+              </button>
+              <div>
+                <button type="button" className="btn btn-ghost" onClick={reiniciarTodo}>Cambiar correo o reenviar</button>
+              </div>
+            </div>
+          )}
+
+          {step === 'verified' && (
+            <div className="cp-row fade-in">
+              <div className="form-group" style={{marginBottom: 0, position: 'relative'}}>
+                <input type="email" className="input-success" value={localEmail} disabled readOnly style={{paddingRight: '40px'}} />
+                <i className="fas fa-check-circle" style={{position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--verde-jara)', fontSize: '1.2rem'}}></i>
+              </div>
+              <div className="btn-container">
+                <button type="button" className="btn btn-secondary" onClick={reiniciarTodo}>Cambiar</button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    /* ==========================================================================
+       COMPONENTE CURP Y DATOS PERSONALES
+       ========================================================================== */
+    function CurpGroup({ field, formData, updateMultipleFields, errorFields }) {
+      const [loading, setLoading] = useState(false);
+      const n = formData.nombres || '';
+      const p = formData.apellido_paterno || '';
+      const m = formData.apellido_materno || '';
+      const curpVal = formData.curp || '';
+
+      const handleUpper = (key, val) => {
+        const clean = val.toUpperCase().replace(/\s{2,}/g, ' ');
+        updateMultipleFields({ [key]: clean });
+      };
+
+      const procesarCURP = async () => {
+        if (curpVal.length !== 18) {
+          Swal.fire({ title: 'Atención', text: 'La CURP debe tener 18 caracteres.', icon: 'warning', confirmButtonColor: '#439859' });
+          return;
+        }
+
+        const rfc = curpVal.substring(0, 10);
+        const anio = curpVal.substring(4, 6);
+        const mes = curpVal.substring(6, 8);
+        const dia = curpVal.substring(8, 10);
+        const siglo = parseInt(anio, 10) > 26 ? "19" : "20";
+        const fecha_nacimiento = `${dia}/${mes}/${siglo}${anio}`;
+        const sexoCurp = curpVal.charAt(10);
+        const sexo = sexoCurp === 'M' ? 'MUJER' : 'HOMBRE';
+        const nombre_completo = `${n} ${p} ${m}`.replace(/\s+/g, ' ').trim();
+
+        const nomProcesado = procesarNombreCurp(quitarAcentos(limpiarPreposiciones(n.toUpperCase())));
+        const patLimpio = quitarAcentos(limpiarPreposiciones(p.toUpperCase()));
+        const matLimpio = quitarAcentos(limpiarPreposiciones(m.toUpperCase()));
+
+        const l1 = patLimpio.charAt(0) || 'X';
+        let vP = patLimpio.substring(1).search(/[AEIOU]/);
+        const l2 = vP !== -1 ? patLimpio.charAt(vP + 1) : 'X';
+        const l3 = matLimpio ? matLimpio.charAt(0) : 'X';
+        const l4 = nomProcesado.charAt(0) || 'X';
+
+        const c1 = obtenerConsonanteInterna(patLimpio);
+        const c2 = matLimpio ? obtenerConsonanteInterna(matLimpio) : 'X';
+        const c3 = obtenerConsonanteInterna(nomProcesado);
+
+        let iniciales = l1 + l2 + l3 + l4;
+        const altisonantes = ["BACA","BAKA","BUEI","BUEY","CACA","CACO","CAGA","CAGO","CAKA","CAKO","COGE","COGI","COJA","COJE","COJI","COJO","COLA","CULO","FALO","FETO","GETA","GUEI","GUEY","JETA","JOTO","KACA","KACO","KAGA","KAGO","KAKA","KAKO","KOGE","KOGI","KOJA","KOJE","KOJI","KOJO","KOLA","KULO","LILO","LOCA","LOCO","LOKA","LOKO","MAME","MAMO","MEAR","MEAS","MEON","MIAR","MION","MOCO","MOKO","MUTE","MULA","PEDA","PEDO","PENE","PIPI","PITO","POPO","PUTA","PUTO","QULO","RATA","ROBA","ROBE","ROBO","RUIN","SENO","TETA","VACA","VAGA","VAGO","VAKA","VUEI","VUEY","WUEI","WUEY"];
+        if (altisonantes.includes(iniciales)) iniciales = l1 + 'X' + l3 + l4;
+
+        const complementos = sexoCurp + curpVal.substring(11, 13) + c1 + c2 + c3;
+
+        if (curpVal.substring(0, 4) !== iniciales || curpVal.substring(4, 10) !== (anio + mes + dia) || curpVal.substring(10, 16) !== complementos) {
+          Swal.fire({ title: 'Atención', text: 'La CURP no coincide matemáticamente con tus nombres y fecha de nacimiento.', icon: 'warning', confirmButtonColor: '#439859' });
+          return;
+        }
+
+        setLoading(true);
+        try {
+          const res = await serverCall('validarExistencia', curpVal, nombre_completo);
+          if (res.existe) {
+            Swal.fire({ title: 'Cliente Existente', html: `El <b>${res.motivo}</b> ingresado ya está registrado.<br>Número de cliente: <b>${res.numCliente}</b>`, icon: 'warning', confirmButtonColor: '#439859' });
+            updateMultipleFields({ curp: '', rfc: '' });
+          } else {
+            updateMultipleFields({ rfc, fecha_nacimiento, sexo, nombre_completo });
+            Swal.fire({ title: '¡CURP Válida!', text: 'Identidad verificada.', icon: 'success', timer: 1400, showConfirmButton: false });
+          }
+        } catch (e) {
+          Swal.fire('Error', 'No se pudo validar la CURP con el servidor.', 'error');
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      return (
+        <div style={{width: '100%'}}>
+          <div className="form-group">
+            <label>Nombre(s) *</label>
+            <ExampleImageRender url={field.exampleImage} hidden={false} />
+            <input type="text" className={errorFields.nombres ? 'input-error' : (n ? 'input-success' : '')} value={n} onChange={e => handleUpper('nombres', e.target.value)} placeholder="Ej. JUAN CARLOS" />
+            {errorFields.nombres && <div className="field-error"><i className="fas fa-exclamation-circle"></i>{errorFields.nombres}</div>}
+          </div>
+          <div className="row-2">
+            <div className="form-group">
+              <label>Apellido paterno *</label>
+              <input type="text" className={errorFields.apellido_paterno ? 'input-error' : (p ? 'input-success' : '')} disabled={!n} value={p} onChange={e => handleUpper('apellido_paterno', e.target.value)} placeholder="Ej. PEREZ" />
+              {errorFields.apellido_paterno && <div className="field-error"><i className="fas fa-exclamation-circle"></i>{errorFields.apellido_paterno}</div>}
+            </div>
+            <div className="form-group">
+              <label>Apellido materno *</label>
+              <input type="text" className={errorFields.apellido_materno ? 'input-error' : (m ? 'input-success' : '')} disabled={!p} value={m} onChange={e => handleUpper('apellido_materno', e.target.value)} placeholder="Ej. LOPEZ" />
+              {errorFields.apellido_materno && <div className="field-error"><i className="fas fa-exclamation-circle"></i>{errorFields.apellido_materno}</div>}
+            </div>
+          </div>
+          <div className="cp-row">
+            <div className="form-group">
+              <label>CURP * <HelperTooltip text={field.helperText} /></label>
+              <input type="text" className={errorFields.curp ? 'input-error' : (formData.rfc ? 'input-success' : '')} disabled={!m} value={curpVal} onChange={e => updateMultipleFields({ curp: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''), rfc: '' })} maxLength={18} placeholder="18 caracteres" />
+              {errorFields.curp && <div className="field-error"><i className="fas fa-exclamation-circle"></i>{errorFields.curp}</div>}
+            </div>
+            <div className="btn-container">
+              <button type="button" className="btn btn-primary" onClick={procesarCURP} disabled={loading || curpVal.length !== 18}>
+                {loading ? <i className="fas fa-spinner fa-spin"></i> : 'Validar'}
+              </button>
+            </div>
+          </div>
+          <div className="form-group">
+            <label>Nombre Completo</label>
+            <input type="text" value={formData.nombre_completo || ''} readOnly />
+          </div>
+          <div className="row-2">
+            <div className="form-group">
+              <label>RFC</label>
+              <input type="text" value={formData.rfc || ''} readOnly />
+            </div>
+            <div className="form-group">
+              <label>Fecha de Nacimiento</label>
+              <input type="text" value={formData.fecha_nacimiento || ''} placeholder="DD/MM/AAAA" readOnly />
+            </div>
+          </div>
+          <div className="form-group">
+            <label>Sexo</label>
+            <input type="text" value={formData.sexo || ''} readOnly />
+          </div>
+        </div>
+      );
+    }
+
+    /* ==========================================================================
+       COMPONENTE CÓDIGO POSTAL Y DIRECCIÓN
+       ========================================================================== */
+    function CpGroup({ field, formData, updateMultipleFields, errorFields, dynamicOptions, setDynamicOptions }) {
+      const [loading, setLoading] = useState(false);
+      const cp = formData.cp || '';
+      const valid = !!formData.estado && !!formData.ciudad;
+
+      const handleNum = (key, val) => updateMultipleFields({ [key]: val.replace(/[^0-9]/g, ''), estado: '', ciudad: '', colonia: '' });
+      const handleUpper = (key, val) => updateMultipleFields({ [key]: val.toUpperCase() });
+
+      const validarCP = async () => {
+        if (cp.length !== 5) return;
+        setLoading(true);
+        try {
+          const res = await serverCall('consultarCodigoPostal', cp);
+          if (res.error) {
+            Swal.fire({ title: 'No encontrado', text: res.mensaje, icon: 'warning', confirmButtonColor: '#439859' });
+            updateMultipleFields({ estado: '', ciudad: '', colonia: '' });
+          } else {
+            updateMultipleFields({ estado: res.estado.toUpperCase(), ciudad: res.municipio.toUpperCase(), colonia: '' });
+            setDynamicOptions(prev => ({ ...prev, colonia: res.colonias || [] }));
+          }
+        } catch (e) {
+          Swal.fire('Error', 'No se pudo consultar el Código Postal.', 'error');
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      const colonias = dynamicOptions.colonia || (formData.colonia ? [formData.colonia] : []);
+
+      return (
+        <div style={{width: '100%'}}>
+          <div className="cp-row">
+            <div className="form-group">
+              <label>Código Postal * <HelperTooltip text={field.helperText} /></label>
+              <ExampleImageRender url={field.exampleImage} hidden={false} />
+              <input type="text" inputMode="numeric" className={errorFields.cp ? 'input-error' : (valid ? 'input-success' : '')} value={cp} onChange={e => handleNum('cp', e.target.value)} maxLength={5} placeholder="Ej. 80000" />
+              {errorFields.cp && <div className="field-error"><i className="fas fa-exclamation-circle"></i>{errorFields.cp}</div>}
+            </div>
+            <div className="btn-container">
+              <button type="button" className="btn btn-primary" onClick={validarCP} disabled={loading || cp.length !== 5}>
+                {loading ? <i className="fas fa-spinner fa-spin"></i> : 'Validar'}
+              </button>
+            </div>
+          </div>
+          <div className="row-2">
+            <div className="form-group">
+              <label>Estado</label>
+              <input type="text" value={formData.estado || ''} readOnly disabled />
+            </div>
+            <div className="form-group">
+              <label>Ciudad o Municipio</label>
+              <input type="text" value={formData.ciudad || ''} readOnly disabled />
+            </div>
+          </div>
+          <div className="form-group">
+            <label>Colonia *</label>
+            <select className={errorFields.colonia ? 'input-error' : ''} disabled={!valid} value={formData.colonia || ''} onChange={e => updateMultipleFields({ colonia: e.target.value })}>
+              <option value="">{valid ? 'Selecciona tu colonia...' : 'Valida primero tu C.P...'}</option>
+              {colonias.map((c, i) => <option key={i} value={c.toUpperCase()}>{c.toUpperCase()}</option>)}
+            </select>
+            {errorFields.colonia && <div className="field-error"><i className="fas fa-exclamation-circle"></i>{errorFields.colonia}</div>}
+          </div>
+          <div className="form-group">
+            <label>Calle *</label>
+            <input type="text" className={errorFields.calle ? 'input-error' : ''} disabled={!valid} value={formData.calle || ''} onChange={e => handleUpper('calle', e.target.value)} />
+            {errorFields.calle && <div className="field-error"><i className="fas fa-exclamation-circle"></i>{errorFields.calle}</div>}
+          </div>
+          <div className="row-2">
+            <div className="form-group">
+              <label>Número Exterior *</label>
+              <input type="text" className={errorFields.num_ext ? 'input-error' : ''} disabled={!formData.calle} value={formData.num_ext || ''} onChange={e => handleUpper('num_ext', e.target.value)} />
+              {errorFields.num_ext && <div className="field-error"><i className="fas fa-exclamation-circle"></i>{errorFields.num_ext}</div>}
+            </div>
+            <div className="form-group">
+              <label>Número Interior</label>
+              <input type="text" disabled={!formData.num_ext} value={formData.num_int || ''} onChange={e => handleUpper('num_int', e.target.value)} placeholder="Opcional" />
+            </div>
+          </div>
+          <div className="form-group">
+            <label>Entre calles *</label>
+            <input type="text" className={errorFields.entre_calles ? 'input-error' : ''} disabled={!formData.num_ext} value={formData.entre_calles || ''} onChange={e => handleUpper('entre_calles', e.target.value)} />
+            {errorFields.entre_calles && <div className="field-error"><i className="fas fa-exclamation-circle"></i>{errorFields.entre_calles}</div>}
+          </div>
+          <div className="form-group">
+            <label>Referencia de domicilio *</label>
+            <input type="text" className={errorFields.referencia ? 'input-error' : ''} disabled={!formData.entre_calles} value={formData.referencia || ''} onChange={e => handleUpper('referencia', e.target.value)} />
+            {errorFields.referencia && <div className="field-error"><i className="fas fa-exclamation-circle"></i>{errorFields.referencia}</div>}
+          </div>
+        </div>
+      );
+    }
+
+    /* ==========================================================================
+       FIRMA DIGITAL EN PAD TÁCTIL (signature)
+       ========================================================================== */
+    function SignaturePadField({ field, value, onSignatureSaved, onClearSignature, error }) {
+      const canvasRef = useRef(null);
+      const [isDrawing, setIsDrawing] = useState(false);
+
+      useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const rect = canvas.parentElement.getBoundingClientRect();
+        if (canvas.width !== rect.width && rect.width > 0) {
+          canvas.width = rect.width;
+          canvas.height = 190;
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          if (value && value.preview) {
+            const img = new Image();
+            img.onload = () => ctx.drawImage(img, 0, 0);
+            img.src = value.preview;
+          }
+        }
+      }, []);
+
+      const getCoords = (e) => {
+        const rect = canvasRef.current.getBoundingClientRect();
+        if (e.touches && e.touches.length > 0) {
+          return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
+        }
+        return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+      };
+
+      const start = (e) => {
+        setIsDrawing(true);
+        const c = getCoords(e);
+        const ctx = canvasRef.current.getContext('2d');
+        ctx.beginPath();
+        ctx.moveTo(c.x, c.y);
+      };
+
+      const draw = (e) => {
+        if (!isDrawing) return;
+        const c = getCoords(e);
+        const ctx = canvasRef.current.getContext('2d');
+        ctx.lineTo(c.x, c.y);
+        ctx.strokeStyle = '#1d1d1f';
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+      };
+
+      const stop = () => {
+        if (!isDrawing) return;
+        setIsDrawing(false);
+        const dataUrl = canvasRef.current.toDataURL('image/jpeg', 0.85);
+        onSignatureSaved(field, dataUrl);
+      };
+
+      const clear = () => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        onClearSignature(field.name);
+      };
+
+      return (
+        <div className="form-group fade-in">
+          <label>
+            {field.label}{field.required && <span style={{color:'var(--danger)',marginLeft:3}}>*</span>}
+            <HelperTooltip text={field.helperText} />
+          </label>
+          <ExampleImageRender url={field.exampleImage} hidden={!!value} />
+          <div style={{position: 'relative', width: '100%'}}>
+            <canvas
+              ref={canvasRef}
+              className={`signature-pad ${error ? 'input-error' : (value ? 'input-success' : '')}`}
+              onMouseDown={start} onMouseMove={draw} onMouseUp={stop} onMouseLeave={stop}
+              onTouchStart={start} onTouchMove={draw} onTouchEnd={stop}
+            />
+            <button type="button" onClick={clear} className="btn btn-secondary" style={{position: 'absolute', top: 10, right: 10, padding: '6px 12px', minHeight: 'auto', fontSize: '0.82rem'}}>
+              <i className="fas fa-eraser"></i> Limpiar
+            </button>
+          </div>
+          {error && <div className="field-error"><i className="fas fa-exclamation-circle"></i>{error}</div>}
+        </div>
+      );
+    }
+
+    /* ==========================================================================
+       RENDERIZADOR UNIVERSAL DE CAMPOS (FieldRenderer)
+       ========================================================================== */
+    function FieldRenderer({
+      field, value, onChange, formData, updateMultipleFields,
+      dynamicOptions, setDynamicOptions, errorFields, onDuplicateResult,
+      onOpenScanner, onDeviceFileSelected, onSignatureSaved, onClearMedia
+    }) {
+      const error = errorFields[field.name];
+      const inputCls = `${error ? 'input-error' : (value ? 'input-success' : '')}`;
+
+      if (field.type === 'curp') return <CurpGroup field={field} formData={formData} updateMultipleFields={updateMultipleFields} errorFields={errorFields} />;
+      if (field.type === 'cp') return <CpGroup field={field} formData={formData} updateMultipleFields={updateMultipleFields} errorFields={errorFields} dynamicOptions={dynamicOptions} setDynamicOptions={setDynamicOptions} />;
+      if (field.type === 'email') return <EmailOtpGroup field={field} value={value} onChange={onChange} error={error} onDuplicateResult={onDuplicateResult} />;
+      if (field.type === 'signature') return <SignaturePadField field={field} value={value} onSignatureSaved={onSignatureSaved} onClearSignature={onClearMedia} error={error} />;
+
+      // Nuevos field_type de Cámara Inteligente en Vivo
+      if (CAMERA_LIVE_TYPES.includes(field.type)) {
+        return <LiveCameraSlotField field={field} value={value} onOpenScanner={onOpenScanner} error={error} />;
+      }
+
+      // Nuevo field_type archivo_documento y archivos generales
+      if (FILE_UPLOAD_TYPES.includes(field.type)) {
+        return <DeviceFileUploadField field={field} value={value} onFileSelected={onDeviceFileSelected} onClearFile={onClearMedia} error={error} />;
+      }
+
+      if (field.type === 'gps') {
+        return (
+          <div className="form-group">
+            <label>{field.label}{field.required && <span style={{color:'var(--danger)',marginLeft:3}}>*</span>}<HelperTooltip text={field.helperText} /></label>
+            <ExampleImageRender url={field.exampleImage} hidden={false} />
+            {value ? (
+              <div style={{display: 'inline-flex', alignItems: 'center', gap: '10px', padding: '12px 16px', background: 'var(--verde-jara-light)', color: '#1b4d29', borderRadius: '14px', fontWeight: 600}}>
+                <i className="fas fa-location-dot"></i><span>{value}</span>
+                <button type="button" className="btn-ghost" onClick={() => onChange('')}><i className="fas fa-times"></i></button>
+              </div>
+            ) : (
+              <button type="button" className="btn btn-secondary" style={{width: '100%'}} onClick={() => {
+                if (navigator.geolocation) {
+                  navigator.geolocation.getCurrentPosition(
+                    pos => onChange(`${pos.coords.latitude}, ${pos.coords.longitude}`),
+                    () => Swal.fire('Atención', 'Debes permitir el acceso a tu ubicación.', 'warning')
+                  );
+                }
+              }}>
+                <i className="fas fa-location-crosshairs"></i> Capturar mi ubicación actual
+              </button>
+            )}
+            {error && <div className="field-error"><i className="fas fa-exclamation-circle"></i>{error}</div>}
+          </div>
+        );
+      }
+
+      if (field.type === 'toggle') {
+        const isChecked = value === 'Sí';
+        return (
+          <div className="form-group" style={{display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 4px', borderBottom: '1px solid #e5e5ea'}}>
+            <div style={{flex: 1, paddingRight: '12px'}}>
+              <label style={{marginBottom: 0}}>{field.label}{field.required && <span style={{color:'var(--danger)',marginLeft:3}}>*</span>}<HelperTooltip text={field.helperText} /></label>
+              <ExampleImageRender url={field.exampleImage} hidden={false} />
+            </div>
+            <label className="toggle-switch">
+              <input type="checkbox" checked={isChecked} onChange={e => onChange(e.target.checked ? 'Sí' : 'No')} />
+              <span className="toggle-slider"></span>
+            </label>
+          </div>
+        );
+      }
+
+      if (field.type === 'multi_select') {
+        const checked = Array.isArray(value) ? value : (value ? String(value).split(',').map(v=>v.trim()).filter(Boolean) : []);
+        const toggle = opt => onChange(checked.includes(opt) ? checked.filter(v => v !== opt) : [...checked, opt]);
+        return (
+          <div className="form-group">
+            <label>{field.label}{field.required && <span style={{color:'var(--danger)',marginLeft:3}}>*</span>}<HelperTooltip text={field.helperText} /></label>
+            <ExampleImageRender url={field.exampleImage} hidden={false} />
+            <div className="chips-group">
+              {(field.options||[]).map((opt, i) => (
+                <div key={i} className={`chip ${checked.includes(opt) ? 'selected' : ''}`} onClick={() => toggle(opt)}>{opt}</div>
+              ))}
+            </div>
+            {error && <div className="field-error"><i className="fas fa-exclamation-circle"></i>{error}</div>}
+          </div>
+        );
+      }
+
+      if (['slider', 'range'].includes(field.type)) {
+        const min = field.options?.[0] ? parseInt(field.options[0], 10) : 0;
+        const max = field.options?.[1] ? parseInt(field.options[1], 10) : 100;
+        const step = field.options?.[2] ? parseInt(field.options[2], 10) : 1;
+        const val = value || min;
+        return (
+          <div className="form-group">
+            <label>{field.label}{field.required && <span style={{color:'var(--danger)',marginLeft:3}}>*</span>}<HelperTooltip text={field.helperText} /></label>
+            <ExampleImageRender url={field.exampleImage} hidden={false} />
+            <input type="range" className="range-slider" min={min} max={max} step={step} value={val} onChange={e => onChange(e.target.value)} />
+            <div className="range-value">{field.placeholder ? field.placeholder.replace('{val}', val) : val}</div>
+          </div>
+        );
+      }
+
+      if (field.type === 'select') {
+        return (
+          <div className="form-group">
+            <label>{field.label}{field.required && <span style={{color:'var(--danger)',marginLeft:3}}>*</span>}<HelperTooltip text={field.helperText} /></label>
+            <ExampleImageRender url={field.exampleImage} hidden={false} />
+            <select className={inputCls} value={value || ''} onChange={e => onChange(e.target.value)}>
+              <option value="">{field.placeholder || 'Selecciona...'}</option>
+              {(field.options||[]).map((o, i) => <option key={i} value={o}>{o}</option>)}
+            </select>
+            {error && <div className="field-error"><i className="fas fa-exclamation-circle"></i>{error}</div>}
+          </div>
+        );
+      }
+
+      if (field.type === 'radio') {
+        return (
+          <div className="form-group">
+            <label>{field.label}{field.required && <span style={{color:'var(--danger)',marginLeft:3}}>*</span>}<HelperTooltip text={field.helperText} /></label>
+            <ExampleImageRender url={field.exampleImage} hidden={false} />
+            <div className="radio-group">
+              {(field.options||[]).map((opt, i) => (
+                <div key={i} className={`radio-item ${value === opt ? 'selected' : ''}`} onClick={() => onChange(opt)}>
+                  <input type="radio" readOnly checked={value === opt} />
+                  <label>{opt}</label>
+                </div>
+              ))}
+            </div>
+            {error && <div className="field-error"><i className="fas fa-exclamation-circle"></i>{error}</div>}
+          </div>
+        );
+      }
+
+      if (field.type === 'checkbox') {
+        const checked = Array.isArray(value) ? value : (value ? String(value).split(',').map(v=>v.trim()).filter(Boolean) : []);
+        const toggle = opt => onChange(checked.includes(opt) ? checked.filter(v => v !== opt) : [...checked, opt]);
+        return (
+          <div className="form-group">
+            <label>{field.label}{field.required && <span style={{color:'var(--danger)',marginLeft:3}}>*</span>}<HelperTooltip text={field.helperText} /></label>
+            <ExampleImageRender url={field.exampleImage} hidden={false} />
+            <div className="checkbox-group">
+              {(field.options||[]).map((opt, i) => (
+                <div key={i} className={`checkbox-item ${checked.includes(opt) ? 'checked' : ''}`} onClick={() => toggle(opt)}>
+                  <input type="checkbox" readOnly checked={checked.includes(opt)} />
+                  <label>{opt}</label>
+                </div>
+              ))}
+            </div>
+            {error && <div className="field-error"><i className="fas fa-exclamation-circle"></i>{error}</div>}
+          </div>
+        );
+      }
+
+      const maxLen = field.maxLength ? parseInt(field.maxLength, 10) : undefined;
+      const isUpper = field.forceUppercase && field.forceUppercase.toLowerCase() === 'yes';
+      const noMatchTypes = [...ALL_MEDIA_TYPES, 'curp', 'cp', 'gps', 'toggle', 'slider', 'range', 'multi_select'];
+      const isMatchRequired = field.requireMatch && field.requireMatch.toLowerCase() === 'yes' && !noMatchTypes.includes(field.type) && !(field.options && field.options.length > 0);
+      const confirmValue = formData[field.name + '_confirm'] || '';
+      const confirmError = errorFields[field.name + '_confirm'];
+
+      if (field.type === 'textarea') {
+        return (
+          <div className="form-group">
+            <label>{field.label}{field.required && <span style={{color:'var(--danger)',marginLeft:3}}>*</span>}<HelperTooltip text={field.helperText} /></label>
+            <ExampleImageRender url={field.exampleImage} hidden={false} />
+            <textarea className={inputCls} placeholder={field.placeholder} value={value || ''} maxLength={maxLen} rows={3} onChange={e => onChange(isUpper ? e.target.value.toUpperCase() : e.target.value)} />
+            {error && !confirmError && <div className="field-error"><i className="fas fa-exclamation-circle"></i>{error}</div>}
+            {isMatchRequired && value && (
+              <div className="form-group fade-in" style={{marginTop: '12px', marginBottom: 0}}>
+                <label>Confirma {field.label} *</label>
+                <textarea className={confirmError ? 'input-error' : (confirmValue && value === confirmValue ? 'input-success' : '')} placeholder={`Confirma ${field.placeholder || ''}`} value={confirmValue} maxLength={maxLen} rows={3} onPaste={e => e.preventDefault()} onChange={e => updateMultipleFields({ [field.name + '_confirm']: isUpper ? e.target.value.toUpperCase() : e.target.value })} />
+                {confirmError && <div className="field-error"><i className="fas fa-exclamation-circle"></i>{confirmError}</div>}
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      const handleTextChange = (e, isConfirm = false) => {
+        let val = e.target.value;
+        if (['tel', 'number', 'clabe'].includes(field.type)) val = val.replace(/[^0-9]/g, '');
+        if (isUpper) val = val.toUpperCase();
+        if (field.type === 'currency') {
+          let num = val.replace(/[^0-9.]/g, '');
+          if (!num) {
+            isConfirm ? updateMultipleFields({ [field.name + '_confirm']: '' }) : onChange('');
+            return;
+          }
+          const parts = num.split('.');
+          if (parts.length > 2) num = parts[0] + '.' + parts.slice(1).join('');
+          let res = '$ ' + parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+          if (parts.length > 1) res += '.' + parts[1].substring(0, 2);
+          val = res;
+        }
+        if (isConfirm) updateMultipleFields({ [field.name + '_confirm']: val });
+        else onChange(val);
+      };
+
+      let inputType = field.type;
+      if (field.type === 'currency') inputType = 'text';
+      if (field.type === 'clabe') inputType = 'tel';
+
+      return (
+        <div className="form-group">
+          <label>{field.label}{field.required && <span style={{color:'var(--danger)',marginLeft:3}}>*</span>}<HelperTooltip text={field.helperText} /></label>
+          <ExampleImageRender url={field.exampleImage} hidden={false} />
+          <input type={inputType} className={inputCls} placeholder={field.placeholder} value={value || ''} maxLength={field.type === 'clabe' ? 18 : maxLen} onChange={e => handleTextChange(e, false)} />
+          {error && !confirmError && <div className="field-error"><i className="fas fa-exclamation-circle"></i>{error}</div>}
+          {isMatchRequired && value && (
+            <div className="form-group fade-in" style={{marginTop: '12px', marginBottom: 0}}>
+              <label>Confirma {field.label} *</label>
+              <input type={inputType} className={confirmError ? 'input-error' : (confirmValue && value === confirmValue ? 'input-success' : '')} placeholder={`Confirma ${field.placeholder || ''}`} value={confirmValue} maxLength={field.type === 'clabe' ? 18 : maxLen} onPaste={e => e.preventDefault()} onChange={e => handleTextChange(e, true)} />
+              {confirmError && <div className="field-error"><i className="fas fa-exclamation-circle"></i>{confirmError}</div>}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    /* ==========================================================================
+       PANTALLA DE ÉXITO FINAL
+       ========================================================================== */
+    function SuccessScreen({ id, onReset, appConfig, form }) {
+      const title = appConfig?.success_title || '¡Solicitud Enviada!';
+      const msg = appConfig?.success_message || 'Tu información y documentos han sido registrados exitosamente.';
+      const [status, setStatus] = useState(null);
+      const [loadingStatus, setLoadingStatus] = useState(false);
+      const showCheck = form?.show_status_check?.toLowerCase() === 'yes';
+
+      const handleCheckStatus = async () => {
+        setLoadingStatus(true);
+        try {
+          const res = await serverCall('checkApplicationStatus', id);
+          if (res.success) setStatus(res.status || 'En revisión');
+          else Swal.fire('Error', res.message, 'error');
+        } catch (e) {
+          Swal.fire('Error', 'Falla al consultar.', 'error');
+        }
+        setLoadingStatus(false);
+      };
+
+      return (
+        <div className="view-body fade-in" style={{textAlign: 'center', padding: '40px 24px'}}>
+          <div style={{width: '82px', height: '82px', borderRadius: '50%', background: 'var(--verde-jara)', color: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.2rem', marginBottom: '20px', boxShadow: '0 8px 24px rgba(67,152,89,0.3)'}}>
+            <i className="fas fa-check"></i>
+          </div>
+          <h2 style={{fontSize: '1.65rem', color: 'var(--verde-jara)', marginBottom: '10px'}}>{title}</h2>
+          <p style={{color: 'var(--text-muted)', marginBottom: '22px', lineHeight: 1.5}}>{msg}</p>
+          <div style={{display: 'inline-block', background: 'var(--input-bg)', padding: '12px 24px', borderRadius: '14px', fontWeight: 700, marginBottom: '26px'}}>
+            Folio de referencia: #{id}
+          </div>
+
+          {showCheck && (
+            <div style={{maxWidth: '380px', margin: '0 auto 26px', padding: '18px', background: '#fafafa', borderRadius: '18px', border: '1.5px solid #e5e5ea'}}>
+              {!status ? (
+                <button className="btn btn-secondary" style={{width: '100%'}} onClick={handleCheckStatus} disabled={loadingStatus}>
+                  {loadingStatus ? <i className="fas fa-spinner fa-spin"></i> : <><i className="fas fa-search"></i> Consultar estatus actual</>}
+                </button>
+              ) : (
+                <div className="fade-in">
+                  <p style={{fontSize: '0.86rem', color: 'var(--text-muted)', marginBottom: '6px'}}>Estatus actual:</p>
+                  <strong style={{color: 'var(--verde-jara)', fontSize: '1.1rem'}}>{status.toUpperCase()}</strong>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div>
+            <button className="btn btn-primary" style={{maxWidth: '260px'}} onClick={onReset}>
+              <i className="fas fa-home"></i> Volver al Inicio
+            </button>
+          </div>
+          <ContactSupport id={id} />
+        </div>
+      );
+    }
+
+    /* ==========================================================================
+       MOTOR PRINCIPAL MULTI-STEP CON SUBIDA EN SEGUNDO PLANO Y CONTROL DE HISTORIAL
+       ========================================================================== */
+    function MultiStepForm({ form, appConfig, onBackToMenu, isBlocked, onHeaderChange }) {
+      const steps = form.steps || [];
+      const storageKey = SESSION_STORAGE_PREFIX + form.id;
+
+      const [history, setHistory] = useState([0]);
+      const [formData, setFormData] = useState({});
+      const [errors, setErrors] = useState({});
+      const [duplicates, setDuplicates] = useState({});
+      const [dynamicOptions, setDynamicOptions] = useState({});
+      const [submitted, setSubmitted] = useState(false);
+      const [responseId, setResponseId] = useState(null);
+      const [saving, setSaving] = useState('');
+      const [scannerRequest, setScannerRequest] = useState(null);
+
+      // Promesas de subida en segundo plano activas
+      const pendingUploadsRef = useRef({});
+      const ignoreNextPopRef = useRef(false);
+
+      const total = steps.length;
+      const step = history[history.length - 1] || 0;
+      const isLastStep = step === total - 1;
+      const currentStepObj = steps[step] || { label: '', fields: [] };
+      const currentStepDisableBack = currentStepObj.fields.some(f => typeof f.disableBack === 'string' && f.disableBack.toLowerCase() === 'yes');
+
+      const totalFields = useMemo(() => steps.reduce((sum, s) => sum + s.fields.length, 0), [steps]);
+      const passedFields = useMemo(() => steps.slice(0, step).reduce((sum, s) => sum + s.fields.length, 0), [step, steps]);
+      const allFields = useMemo(() => steps.flatMap(s => s.fields), [steps]);
+
+      let progressPercentage = totalFields === 0 ? 15 : Math.max(12, (passedFields / totalFields) * 100);
+      if (isLastStep) progressPercentage = 100;
+
+      // Detectar si el paso actual tiene 2 o más tarjetas de fotos para activar Grid de 3 columnas en PC
+      const mediaFieldsCountInStep = currentStepObj.fields.filter(f => CAMERA_LIVE_TYPES.includes(f.type) || FILE_UPLOAD_TYPES.includes(f.type)).length;
+
+      // 1. Restaurar sesión desde sessionStorage al montar el formulario
+      useEffect(() => {
+        window.asegurarModelosFacialesGlobal();
+        try {
+          const raw = sessionStorage.getItem(storageKey);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && parsed.formData && Object.keys(parsed.formData).length > 0) {
+              setFormData(parsed.formData);
+              if (Array.isArray(parsed.history) && parsed.history.length > 0) {
+                setHistory(parsed.history);
+              }
+            }
+          }
+        } catch (e) {}
+      }, [form.id]);
+
+      // 2. Guardar en sessionStorage cada vez que cambie formData o history
+      useEffect(() => {
+        if (submitted) return;
+        try {
+          // Guardamos copia ligera sin saturar quota si ya tiene URL de Drive
+          const lightData = { ...formData };
+          Object.keys(lightData).forEach(k => {
+            const v = lightData[k];
+            if (v && typeof v === 'object' && v.url) {
+              lightData[k] = { ...v, base64: null };
+            }
+          });
+          sessionStorage.setItem(storageKey, JSON.stringify({ formData: lightData, history }));
+        } catch (e) {}
+      }, [formData, history, submitted]);
+
+      // 3. Candado onbeforeunload para evitar que cierre pestaña dejando archivos huérfanos sin enviar
+      const hasAnyProgress = useMemo(() => Object.keys(formData).length > 0 && !submitted, [formData, submitted]);
+      useEffect(() => {
+        const handleBeforeUnload = (e) => {
+          if (hasAnyProgress) {
+            e.preventDefault();
+            e.returnValue = 'Aún no has enviado tu solicitud. ¿Seguro que deseas salir?';
+            return e.returnValue;
+          }
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+      }, [hasAnyProgress]);
+
+      // 4. Sincronizar Banner Azul Hielo y Barra Superior con el paso actual
+      useEffect(() => {
+        if (submitted) {
+          onHeaderChange({ pct: 100, title: 'Solicitud completada', sub: 'Tu expediente ha sido registrado correctamente.', wide: false });
+        } else {
+          onHeaderChange({
+            pct: progressPercentage,
+            title: currentStepObj.label || form.title,
+            sub: form.subtitle || 'Completa la información solicitada para continuar.',
+            wide: mediaFieldsCountInStep >= 2
+          });
+        }
+      }, [step, submitted, progressPercentage, mediaFieldsCountInStep]);
+
+      // 5. Control del botón "Atrás" físico en Android/iOS (popstate)
+      useEffect(() => {
+        try {
+          window.history.pushState({ stepIndex: step }, '', `#paso-${step + 1}`);
+        } catch (e) {}
+
+        const onPopState = () => {
+          if (ignoreNextPopRef.current) {
+            ignoreNextPopRef.current = false;
+            return;
+          }
+          // Si el modal de cámara está abierto, el botón "Atrás" solo cierra la cámara
+          if (scannerRequest) {
+            setScannerRequest(null);
+            return;
+          }
+          if (Swal.isVisible()) {
+            Swal.close();
+            return;
+          }
+          if (history.length > 1 && !currentStepDisableBack) {
+            setHistory(prev => prev.slice(0, -1));
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else if (hasAnyProgress) {
+            try { window.history.pushState({ stepIndex: step }, '', `#paso-${step + 1}`); } catch (e) {}
+            Swal.fire({
+              icon: 'question',
+              title: '¿Salir de la solicitud?',
+              text: 'Tu avance sigue guardado temporalmente en esta sesión.',
+              showCancelButton: true,
+              confirmButtonText: 'Permanecer aquí',
+              cancelButtonText: 'Salir al inicio',
+              confirmButtonColor: '#439859'
+            }).then(res => {
+              if (!res.isConfirmed && onBackToMenu) onBackToMenu();
+            });
+          } else if (onBackToMenu) {
+            onBackToMenu();
+          }
+        };
+
+        window.addEventListener('popstate', onPopState);
+        return () => window.removeEventListener('popstate', onPopState);
+      }, [step, history, scannerRequest, hasAnyProgress, currentStepDisableBack]);
+
+      const updateField = (name, val) => {
+        setFormData(prev => ({ ...prev, [name]: val }));
+        setErrors(prev => { const e = { ...prev }; delete e[name]; return e; });
+      };
+
+      const updateMultipleFields = (updates) => {
+        setFormData(prev => ({ ...prev, ...updates }));
+        setErrors(prev => {
+          const nextE = { ...prev };
+          Object.keys(updates).forEach(k => delete nextE[k]);
+          return nextE;
+        });
+      };
+
+      /* --- MOTOR DE SUBIDA EN SEGUNDO PLANO INSTANTÁNEA --- */
+      const dispararUploadIndividual = (field, base64Data, customSuffix = '', mime = 'image/jpeg') => {
+        const cleanB64 = String(base64Data).includes(',') ? String(base64Data).split(',')[1] : String(base64Data);
+        const isRestricted = field.restrictedFile && field.restrictedFile.toLowerCase() === 'yes';
+        const safeClient = (formData.nombre_completo || formData.nombres || 'Solicitante').replace(/[^a-zA-Z0-9]/g, '_');
+        const ext = mime.includes('pdf') ? 'pdf' : (mime.includes('png') ? 'png' : 'jpg');
+        const fileName = `${safeClient}_${field.name}${customSuffix ? '_' + customSuffix : ''}_${Date.now()}.${ext}`;
+
+        return serverCall('uploadFile', cleanB64, fileName, mime, isRestricted).then(res => {
+          if (res && res.success && res.data?.url) {
+            return res.data.url;
+          }
+          throw new Error(res?.message || 'Error al subir archivo');
+        });
+      };
+
+      const handleOpenScanner = (field) => {
+        let mode = 'horizontal';
+        if (field.type === 'foto_vertical') mode = 'vertical';
+        else if (field.type === 'selfie_caracompleta') mode = 'bio5';
+        else if (field.type === 'selfie_caranormal') mode = 'selfie1';
+
+        try { window.history.pushState({ cameraModal: true }, '', '#camara'); } catch (e) {}
+        setScannerRequest({ field, mode, label: field.label });
+      };
+
+      const handleScannerComplete = (result) => {
+        const field = scannerRequest.field;
+        setScannerRequest(null);
+
+        if (result.type === 'single') {
+          const dataUrl = result.dataUrl;
+          const b64 = dataUrl.split(',')[1];
+          updateField(field.name, {
+            preview: dataUrl,
+            base64: b64,
+            mime: 'image/jpeg',
+            name: `${field.name}.jpg`,
+            url: null,
+            status: 'uploading'
+          });
+
+          const upPromise = dispararUploadIndividual(field, b64, '', 'image/jpeg')
+            .then(url => {
+              setFormData(prev => ({
+                ...prev,
+                [field.name]: { ...(prev[field.name] || {}), url, status: 'uploaded' }
+              }));
+            })
+            .catch(() => {
+              setFormData(prev => ({
+                ...prev,
+                [field.name]: { ...(prev[field.name] || {}), status: 'error' }
+              }));
+            })
+            .finally(() => {
+              delete pendingUploadsRef.current[field.name];
+            });
+
+          pendingUploadsRef.current[field.name] = upPromise;
+        } else if (result.type === 'bio5') {
+          // selfie_caracompleta: Sube las 5 fotos en paralelo, guarda Frente en field.name y las 5 URLs separadas por coma en field.name + '_angulos'
+          const anglesObj = result.anglesDataUrls; // { frente, abajo, arriba, izquierda, derecha }
+          const frenteDataUrl = anglesObj.frente;
+          updateField(field.name, {
+            preview: frenteDataUrl,
+            base64: frenteDataUrl.split(',')[1],
+            anglesBase64: anglesObj,
+            mime: 'image/jpeg',
+            name: `${field.name}_frente.jpg`,
+            url: null,
+            anglesUrls: null,
+            status: 'uploading'
+          });
+
+          const orden = ['frente', 'abajo', 'arriba', 'izquierda', 'derecha'];
+          const multiPromise = Promise.all(
+            orden.map(k => dispararUploadIndividual(field, anglesObj[k], k.toUpperCase(), 'image/jpeg'))
+          ).then(urls => {
+            const frenteUrl = urls[0];
+            const cincoUrlsComa = urls.join(', ');
+            setFormData(prev => ({
+              ...prev,
+              [field.name]: {
+                ...(prev[field.name] || {}),
+                url: frenteUrl,
+                anglesUrls: cincoUrlsComa,
+                status: 'uploaded'
+              },
+              [field.name + '_angulos']: cincoUrlsComa
+            }));
+          }).catch(() => {
+            setFormData(prev => ({
+              ...prev,
+              [field.name]: { ...(prev[field.name] || {}), status: 'error' }
+            }));
+          }).finally(() => {
+            delete pendingUploadsRef.current[field.name];
+          });
+
+          pendingUploadsRef.current[field.name] = multiPromise;
+        }
+      };
+
+      const handleDeviceFileSelected = (field, fileObj) => {
+        updateField(field.name, { ...fileObj, url: null, status: 'uploading' });
+        const upPromise = dispararUploadIndividual(field, fileObj.base64, '', fileObj.mime)
+          .then(url => {
+            setFormData(prev => ({
+              ...prev,
+              [field.name]: { ...(prev[field.name] || {}), url, status: 'uploaded' }
+            }));
+          })
+          .catch(() => {
+            setFormData(prev => ({
+              ...prev,
+              [field.name]: { ...(prev[field.name] || {}), status: 'error' }
+            }));
+          })
+          .finally(() => {
+            delete pendingUploadsRef.current[field.name];
+          });
+
+        pendingUploadsRef.current[field.name] = upPromise;
+      };
+
+      const handleSignatureSaved = (field, dataUrl) => {
+        const b64 = dataUrl.split(',')[1];
+        updateField(field.name, {
+          preview: dataUrl,
+          base64: b64,
+          mime: 'image/jpeg',
+          name: `${field.name}_firma.jpg`,
+          url: null,
+          status: 'uploading'
+        });
+        const upPromise = dispararUploadIndividual(field, b64, 'FIRMA', 'image/jpeg')
+          .then(url => {
+            setFormData(prev => ({
+              ...prev,
+              [field.name]: { ...(prev[field.name] || {}), url, status: 'uploaded' }
+            }));
+          })
+          .catch(() => {})
+          .finally(() => {
+            delete pendingUploadsRef.current[field.name];
+          });
+        pendingUploadsRef.current[field.name] = upPromise;
+      };
+
+      /* --- VALIDACIÓN DE PASO --- */
+      const validate = (idx) => {
+        const errs = {};
+        (steps[idx]?.fields || []).forEach(f => {
+          if (f.type === 'curp') {
+            if (f.required) {
+              if (!formData.nombres) errs.nombres = "Obligatorio";
+              if (!formData.apellido_paterno) errs.apellido_paterno = "Obligatorio";
+              if (!formData.apellido_materno) errs.apellido_materno = "Obligatorio";
+              if (!formData.curp || formData.curp.length !== 18 || !formData.rfc) errs.curp = "Presiona Validar en tu CURP";
+            }
+            return;
+          }
+          if (f.type === 'cp') {
+            if (f.required) {
+              if (!formData.cp || formData.cp.length !== 5 || !formData.estado) errs.cp = "Valida tu Código Postal";
+              if (!formData.colonia) errs.colonia = "Selecciona una colonia";
+              if (!formData.calle) errs.calle = "Obligatorio";
+              if (!formData.num_ext) errs.num_ext = "Obligatorio";
+              if (!formData.entre_calles) errs.entre_calles = "Obligatorio";
+              if (!formData.referencia) errs.referencia = "Obligatorio";
+            }
+            return;
+          }
+
+          const v = formData[f.name];
+          const empty = v === undefined || v === null || v === '' || (Array.isArray(v) && v.length === 0);
+
+          if (!empty && !ALL_MEDIA_TYPES.includes(f.type)) {
+            if (f.type === 'clabe' && (String(v).length !== 18 || !window.validarClabeOficial(String(v)))) {
+              errs[f.name] = 'CLABE inválida (verifica los 18 dígitos)';
+            }
+            if (f.requireAlphanumeric && f.requireAlphanumeric.toLowerCase() === 'yes' && !(f.options && f.options.length > 0)) {
+              if (!/[a-zA-Z]/.test(v) || !/[0-9]/.test(v)) {
+                errs[f.name] = 'Debe contener letras y números';
+              }
+            }
+            const noMatchTypes = [...ALL_MEDIA_TYPES, 'curp', 'cp', 'gps', 'toggle', 'slider', 'range', 'multi_select'];
+            if (f.requireMatch && f.requireMatch.toLowerCase() === 'yes' && !noMatchTypes.includes(f.type) && !(f.options && f.options.length > 0)) {
+              const confirmVal = formData[f.name + '_confirm'];
+              if (!confirmVal) errs[f.name + '_confirm'] = 'Confirma la información';
+              else if (v !== confirmVal) errs[f.name + '_confirm'] = 'Los datos no coinciden';
+            }
+          }
+
+          if (f.copyFrom) {
+            const src = allFields.find(x => String(x.id) === String(f.copyFrom));
+            if (src) {
+              const valTarget = formData[f.name];
+              const valSource = src.type === 'curp' ? formData['nombre_completo'] : formData[src.name];
+              const strT = Array.isArray(valTarget) ? valTarget.join(',').toLowerCase() : String(valTarget || '').trim().toLowerCase();
+              const strS = Array.isArray(valSource) ? valSource.join(',').toLowerCase() : String(valSource || '').trim().toLowerCase();
+              if (strT !== strS) errs[f.name] = 'No coincide con el registro original';
+            }
+          }
+
+          if (!f.required) return;
+          if (ALL_MEDIA_TYPES.includes(f.type)) {
+            if (!v || (!v.base64 && !v.url && !v.preview)) errs[f.name] = 'Captura o archivo obligatorio';
+            return;
+          }
+          if (empty) {
+            errs[f.name] = f.type === 'email' ? 'Debes verificar tu correo' : 'Obligatorio';
+          }
+        });
+
+        (steps[idx]?.fields || []).forEach(f => {
+          if (f.type === 'email' && duplicates[f.name]) errs[f.name] = 'Correo ya registrado';
+        });
+
+        return errs;
+      };
+
+      const next = () => {
+        const errs = validate(step);
+        if (Object.keys(errs).length) {
+          setErrors(errs);
+          Swal.fire({ title: 'Atención', text: 'Verifica los campos marcados en rojo para continuar.', icon: 'warning', confirmButtonColor: '#439859' });
+          return;
+        }
+        setErrors({});
+
+        let nextStep = step + 1;
+        for (const f of currentStepObj.fields) {
+          if (f.skipLogic && formData[f.name]) {
+            const rules = f.skipLogic.split('|');
+            for (const rule of rules) {
+              const parts = rule.split(':');
+              if (parts.length === 2) {
+                const val = parts[0].trim();
+                const targetIdx = parseInt(parts[1].trim(), 10) - 1;
+                const ans = formData[f.name];
+                const isMatch = Array.isArray(ans) ? ans.some(a => String(a).trim() === val) : String(ans).trim() === val;
+                if (isMatch && targetIdx > step && targetIdx < total) {
+                  nextStep = targetIdx;
+                  break;
+                }
+              }
+            }
+          }
+          if (nextStep !== step + 1) break;
+        }
+
+        setHistory(prev => [...prev, nextStep]);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      const prev = () => {
+        setErrors({});
+        setHistory(prev => prev.slice(0, -1));
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      /* --- ENVÍO FINAL ULTRA-RÁPIDO --- */
+      const submit = async () => {
+        const errs = validate(step);
+        if (Object.keys(errs).length) {
+          setErrors(errs);
+          Swal.fire({ title: 'Faltan datos', text: 'Completa todos los campos obligatorios antes de enviar.', icon: 'warning', confirmButtonColor: '#439859' });
+          return;
+        }
+
+        setSaving('Sincronizando documentos...');
+        try {
+          // Esperar cualquier subida en segundo plano que siga en curso
+          const activePromises = Object.values(pendingUploadsRef.current);
+          if (activePromises.length > 0) {
+            await Promise.allSettled(activePromises);
+          }
+
+          const payload = { ...formData, _form_id_: form.id };
+          const mediaFields = steps.flatMap(s => s.fields).filter(f => ALL_MEDIA_TYPES.includes(f.type));
+
+          // Verificar que todas las fotos/archivos tengan su URL de Drive; si alguna falló en background, la subimos aquí
+          for (const f of mediaFields) {
+            const item = payload[f.name];
+            if (!item) continue;
+
+            if (f.type === 'selfie_caracompleta') {
+              if (item.url && item.anglesUrls) {
+                payload[f.name] = item.url;
+                payload[f.name + '_angulos'] = item.anglesUrls;
+              } else if (item.anglesBase64) {
+                const orden = ['frente', 'abajo', 'arriba', 'izquierda', 'derecha'];
+                const urls = await Promise.all(orden.map(k => dispararUploadIndividual(f, item.anglesBase64[k], k.toUpperCase(), 'image/jpeg')));
+                payload[f.name] = urls[0];
+                payload[f.name + '_angulos'] = urls.join(', ');
+              }
+            } else {
+              if (item.url) {
+                payload[f.name] = item.url;
+              } else if (item.base64) {
+                const url = await dispararUploadIndividual(f, item.base64, '', item.mime || 'image/jpeg');
+                payload[f.name] = url;
+              }
+            }
+          }
+
+          setSaving('Guardando solicitud...');
+          const res = await serverCall('submitForm', payload);
+          setSaving('');
+
+          if (res.success) {
+            sessionStorage.removeItem(storageKey);
+            setResponseId(res.data.id);
+            setSubmitted(true);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else {
+            Swal.fire({ icon: 'error', title: 'Error al guardar', text: res.message, confirmButtonColor: '#439859' });
+          }
+        } catch (e) {
+          setSaving('');
+          Swal.fire({ icon: 'error', title: 'Problema de conexión', text: e.message || 'Intenta enviar nuevamente.', confirmButtonColor: '#439859' });
+        }
+      };
+
+      if (submitted) {
+        return (
+          <SuccessScreen
+            id={responseId}
+            appConfig={appConfig}
+            form={form}
+            onReset={() => {
+              sessionStorage.removeItem(storageKey);
+              if (onBackToMenu) onBackToMenu();
+              else {
+                setSubmitted(false);
+                setHistory([0]);
+                setFormData({});
+                setErrors({});
+              }
+            }}
+          />
+        );
+      }
+
+      return (
+        <div className="view-body fade-in">
+          <fieldset disabled={isBlocked} style={{border: 'none', padding: 0, margin: 0, minWidth: 0, opacity: isBlocked ? 0.6 : 1}}>
+            <div className={`step-fields-layout ${mediaFieldsCountInStep >= 2 ? 'multi-photos-grid' : ''}`}>
+              {currentStepObj.fields.map(f => (
+                <FieldRenderer
+                  key={f.id}
+                  field={f}
+                  value={formData[f.name] !== undefined ? formData[f.name] : (['checkbox', 'multi_select'].includes(f.type) ? [] : (ALL_MEDIA_TYPES.includes(f.type) ? null : (f.type === 'toggle' ? 'No' : '')))}
+                  onChange={val => updateField(f.name, val)}
+                  formData={formData}
+                  updateMultipleFields={updateMultipleFields}
+                  dynamicOptions={dynamicOptions}
+                  setDynamicOptions={setDynamicOptions}
+                  errorFields={errors}
+                  onDuplicateResult={(name, isDup) => setDuplicates(prev => ({ ...prev, [name]: isDup }))}
+                  onOpenScanner={handleOpenScanner}
+                  onDeviceFileSelected={handleDeviceFileSelected}
+                  onSignatureSaved={handleSignatureSaved}
+                  onClearMedia={(fieldName) => updateField(fieldName, null)}
+                />
+              ))}
+            </div>
+          </fieldset>
+
+          <div className="privacy-text">
+            La carga y uso de información y datos personales es responsabilidad del usuario.<br/>
+            <span className="privacy-link" onClick={() => { if (!isBlocked) window.mostrarAvisoPrivacidad(); }}>Consultar Aviso de Privacidad</span>
+          </div>
+
+          <div className="form-nav">
+            {history.length > 1 && !currentStepDisableBack ? (
+              <button type="button" className="btn btn-secondary" onClick={prev} disabled={isBlocked} style={{maxWidth: '150px'}}>
+                <i className="fas fa-chevron-left"></i> Atrás
+              </button>
+            ) : (
+              (step === 0 && onBackToMenu) ? (
+                <button type="button" className="btn btn-ghost" onClick={onBackToMenu}>
+                  <i className="fas fa-chevron-left"></i> Inicio
+                </button>
+              ) : <span></span>
+            )}
+
+            {!isLastStep ? (
+              <button type="button" className="btn btn-primary" onClick={next} disabled={isBlocked} style={{maxWidth: '220px', marginLeft: 'auto'}}>
+                Siguiente <i className="fas fa-arrow-right"></i>
+              </button>
+            ) : (
+              <button type="button" className="btn btn-success" onClick={submit} disabled={!!saving || isBlocked} style={{maxWidth: '280px', marginLeft: 'auto'}}>
+                {saving ? <><i className="fas fa-spinner fa-spin"></i> {saving}</> : <><i className="fas fa-paper-plane"></i> Enviar Solicitud</>}
+              </button>
+            )}
+          </div>
+
+          {scannerRequest && (
+            <SmartCameraModal
+              request={scannerRequest}
+              onClose={() => setScannerRequest(null)}
+              onComplete={handleScannerComplete}
+            />
+          )}
+        </div>
+      );
+    }
+
+    /* ==========================================================================
+       APP SHELL PRINCIPAL
+       ========================================================================== */
+    function App() {
+      const [config, setConfig] = useState(null);
+      const [selectedFormId, setSelectedFormId] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const [initError, setInitError] = useState('');
+      const [headerState, setHeaderState] = useState({
+        pct: 12,
+        title: 'Portal PrestaJara',
+        sub: 'Selecciona una opción para iniciar tu solicitud digital.',
+        wide: false
+      });
+
+      const handleSelectForm = (id) => {
+        const f = config?.forms.find(x => x.id === id);
+        const needsCheck = f && f.require_browser_check && f.require_browser_check.toLowerCase() === 'yes';
+        if (needsCheck && !window.esNavegadorCompatible()) {
+          window.mostrarAlertaBloqueo();
+        } else {
+          setSelectedFormId(id);
+        }
+      };
+
+      useEffect(() => {
+        serverCall('getFormConfig').then(res => {
+          setLoading(false);
+          if (res && res.success) {
+            setConfig(res.data);
+            if (res.data.forms && res.data.forms.length === 1) {
+              const f = res.data.forms[0];
+              const needsCheck = f.require_browser_check && f.require_browser_check.toLowerCase() === 'yes';
+              const showStatus = f.show_status_check && f.show_status_check.toLowerCase() === 'yes';
+              if (needsCheck && !window.esNavegadorCompatible()) {
+                window.mostrarAlertaBloqueo();
+              }
+              if (!showStatus) {
+                setSelectedFormId(f.id);
+              }
+            }
+          } else {
+            setInitError(res?.message || 'Error al cargar la configuración.');
+          }
+        }).catch(() => {
+          setLoading(false);
+          setInitError('No se pudo conectar con el servidor. Verifica la URL de implementación de Google Apps Script.');
+        });
+      }, []);
+
+      const forms = config?.forms || [];
+      const showWelcome = !selectedFormId && (forms.length > 1 || forms.some(f => f.show_status_check?.toLowerCase() === 'yes'));
+      const currentForm = forms.find(f => f.id === selectedFormId) || forms[0];
+      const isBlocked = currentForm?.require_browser_check?.toLowerCase() === 'yes' && !window.esNavegadorCompatible();
+
+      return (
+        <div className="app-shell">
+          <header className="top-brand-bar">
+            <div className="top-brand-inner">
+              <img src={LOGO} alt="PrestaJara" />
+              <div className="top-brand-title">PrestaJara</div>
+            </div>
+            <div className="step-progress-track">
+              <div className="step-progress-fill" style={{ width: `${showWelcome ? 12 : headerState.pct}%` }}></div>
+            </div>
+          </header>
+
+          <section className="instruction-banner">
+            <h2>{showWelcome ? 'Bienvenido(a) al Portal' : headerState.title}</h2>
+            <p>{showWelcome ? 'Selecciona el trámite que deseas realizar o consulta tu estatus.' : headerState.sub}</p>
+          </section>
+
+          <main className={`app-container ${!showWelcome && headerState.wide ? 'wide-desktop-card' : ''}`}>
+            {loading ? (
+              <div className="view-body">
+                <div className="skeleton" style={{height: 28, width: '55%', marginBottom: 24}}></div>
+                <div className="skeleton" style={{height: 54, width: '100%', marginBottom: 18}}></div>
+                <div className="skeleton" style={{height: 54, width: '100%', marginBottom: 18}}></div>
+                <div className="skeleton" style={{height: 54, width: '100%', marginBottom: 18}}></div>
+              </div>
+            ) : initError ? (
+              <div className="view-body" style={{textAlign: 'center', padding: '50px 20px'}}>
+                <i className="fas fa-triangle-exclamation" style={{fontSize: '3rem', color: 'var(--danger)', marginBottom: '14px'}}></i>
+                <p style={{fontWeight: 600, color: 'var(--text-muted)'}}>{initError}</p>
+              </div>
+            ) : showWelcome ? (
+              <WelcomeScreen forms={forms} onSelect={handleSelectForm} />
+            ) : (!currentForm || !currentForm.steps || currentForm.steps.length === 0) ? (
+              <div className="view-body" style={{textAlign: 'center', padding: '45px 20px'}}>
+                <i className="fas fa-tools" style={{fontSize: '3rem', color: '#c7c7cc', marginBottom: '14px'}}></i>
+                <h3>Formulario sin preguntas activas</h3>
+                <p style={{color: 'var(--text-muted)', marginTop: '8px'}}>Configura los campos en la hoja Settings.</p>
+                {forms.length > 1 && (
+                  <button className="btn btn-secondary" style={{marginTop: '20px'}} onClick={() => setSelectedFormId(null)}>Volver al inicio</button>
+                )}
+              </div>
+            ) : (
+              <MultiStepForm
+                form={currentForm}
+                appConfig={config.appConfig}
+                onBackToMenu={(forms.length > 1 || forms.some(f => f.show_status_check?.toLowerCase() === 'yes')) ? () => setSelectedFormId(null) : null}
+                isBlocked={isBlocked}
+                onHeaderChange={setHeaderState}
+              />
+            )}
+          </main>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
 </body>
 </html>
